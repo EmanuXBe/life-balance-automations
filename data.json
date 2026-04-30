@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-04-30T15:24:25.051Z",
-  "daysLogged": 1,
-  "perfectDays": 1,
-  "streak": 1,
-  "avg7": 10,
+  "updatedAt": "2026-04-30T17:04:02.754Z",
+  "daysLogged": 0,
+  "perfectDays": 0,
+  "streak": 0,
+  "avg7": 0,
   "improvement": null,
   "scoreDist": [
     0,
@@ -16,7 +16,7 @@
     0,
     0,
     0,
-    1
+    0
   ],
   "areaLabels": [
     "Spiritual",
@@ -27,11 +27,11 @@
     "Creative"
   ],
   "areaAvgs": [
-    100,
-    100,
-    100,
-    100,
-    100,
-    100
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
   ]
 }
