@@ -123,13 +123,19 @@ async function queryAllPages() {
 
 async function getPageText(pageId) {
     const res = await notionFetch(`/blocks/${pageId}/children?page_size=100`);
-    const TEXT_TYPES = ['paragraph', 'heading_1', 'heading_2', 'heading_3',
-        'bulleted_list_item', 'numbered_list_item', 'quote', 'callout', 'toggle'];
+    // Only paragraph and list types — headings/callouts are template structure
+    const USER_TYPES = ['paragraph', 'bulleted_list_item', 'numbered_list_item', 'quote'];
     let text = '';
     for (const block of res.results) {
-        if (TEXT_TYPES.includes(block.type)) {
+        if (USER_TYPES.includes(block.type)) {
             const richText = block[block.type]?.rich_text || [];
-            text += richText.map(r => r.plain_text).join('') + ' ';
+            const blockText = richText.map(r => r.plain_text).join('').trim();
+            // Only include text after the → prompt marker — that's what the user wrote.
+            // Skip empty prompts, template labels, bold headers, and declarations.
+            if (blockText.startsWith('→')) {
+                const userContent = blockText.replace(/^→\s*/, '').trim();
+                if (userContent.length > 2) text += userContent + ' ';
+            }
         }
     }
     return text.trim();
