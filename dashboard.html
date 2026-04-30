@@ -3,9 +3,10 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>Life Balance — Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.0.6/wordcloud2.min.js"></script>
     <style>
         :root {
             --bg: #0f0f0f;
@@ -18,6 +19,8 @@
             --green: #1D9E75;
             --red: #E24B4A;
             --amber: #BA7517;
+            --blue: #378ADD;
+            --pink: #D4537E;
             --radius: 10px;
             --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
@@ -36,6 +39,39 @@
             padding: 20px;
         }
 
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0;
+        }
+
+        .tab {
+            padding: 8px 18px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--muted);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: color .15s, border-color .15s;
+        }
+
+        .tab.active {
+            color: var(--text);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
@@ -70,10 +106,7 @@
             border-color: var(--accent);
         }
 
-        .refresh-btn:active {
-            transform: scale(0.97);
-        }
-
+        /* SETUP */
         .setup-banner {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -106,6 +139,7 @@
             border-color: var(--accent);
         }
 
+        /* METRICS */
         .metrics {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -152,6 +186,7 @@
             color: var(--red);
         }
 
+        /* CHARTS */
         .charts {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -163,6 +198,10 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 16px;
+        }
+
+        .chart-card.full {
+            grid-column: 1/-1;
         }
 
         .chart-title {
@@ -177,6 +216,10 @@
             position: relative;
             width: 100%;
             height: 230px;
+        }
+
+        .chart-wrap.tall {
+            height: 280px;
         }
 
         .legend {
@@ -201,6 +244,82 @@
             flex-shrink: 0;
         }
 
+        /* AI INSIGHT */
+        .insight-card {
+            background: var(--surface);
+            border: 1px solid rgba(127, 119, 221, 0.3);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin-bottom: 14px;
+        }
+
+        .insight-label {
+            font-size: 10px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 8px;
+        }
+
+        .insight-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .insight-text.loading {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        /* WORD CLOUD */
+        #wordCloudCanvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* HEATMAP */
+        .heatmap-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            padding: 4px 0;
+        }
+
+        .heatmap-cell {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            background: var(--surface2);
+        }
+
+        .heatmap-cell.level-1 {
+            background: rgba(127, 119, 221, 0.25);
+        }
+
+        .heatmap-cell.level-2 {
+            background: rgba(127, 119, 221, 0.5);
+        }
+
+        .heatmap-cell.level-3 {
+            background: rgba(127, 119, 221, 0.75);
+        }
+
+        .heatmap-cell.level-4 {
+            background: #7F77DD;
+        }
+
+        .heatmap-months {
+            display: flex;
+            gap: 3px;
+            font-size: 9px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        /* STATE */
         .state {
             color: var(--muted);
             font-size: 12px;
@@ -216,6 +335,10 @@
             .charts {
                 grid-template-columns: 1fr;
             }
+
+            .chart-card.full {
+                grid-column: auto;
+            }
         }
     </style>
 </head>
@@ -224,91 +347,196 @@
 
     <div class="header">
         <div>
-            <div class="header-title">100 Days Challenge</div>
+            <div class="header-title">Life Balance</div>
             <div class="header-sub" id="updated-at">Loading…</div>
         </div>
-        <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh</button>
+        <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
     </div>
 
-    <div class="setup-banner">
-        <label>Challenge start date</label>
-        <input type="date" id="start-date" />
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('habits')">🏆 100 Days</div>
+        <div class="tab" onclick="switchTab('journal')">📓 Journaling</div>
     </div>
 
-    <div id="loading" class="state">Fetching your data…</div>
-    <div id="error" class="state" style="display:none;color:var(--red);"></div>
+    <!-- ═══════════════════ TAB: 100 DAYS ═══════════════════ -->
+    <div class="tab-content active" id="tab-habits">
 
-    <div id="dashboard" style="display:none;">
-        <div class="metrics">
-            <div class="metric">
-                <div class="metric-label">Current day</div>
-                <div class="metric-value" id="m-day">—</div>
-                <div class="metric-sub">of 100</div>
+        <div class="setup-banner">
+            <label>Challenge start date</label>
+            <input type="date" id="start-date" />
+        </div>
+
+        <div id="h-loading" class="state">Fetching habit data…</div>
+        <div id="h-error" class="state" style="display:none;color:var(--red);"></div>
+
+        <div id="h-dashboard" style="display:none;">
+            <div class="metrics">
+                <div class="metric">
+                    <div class="metric-label">Current day</div>
+                    <div class="metric-value" id="m-day">—</div>
+                    <div class="metric-sub">of 100</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Perfect days</div>
+                    <div class="metric-value" id="m-perfect">—</div>
+                    <div class="metric-sub" id="m-perfect-pct">10/10 habits</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Current streak</div>
+                    <div class="metric-value" id="m-streak">—</div>
+                    <div class="metric-sub">consecutive days</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">7-day avg</div>
+                    <div class="metric-value" id="m-avg">—</div>
+                    <div class="metric-sub" id="m-improvement">habits / day</div>
+                </div>
             </div>
-            <div class="metric">
-                <div class="metric-label">Perfect days</div>
-                <div class="metric-value" id="m-perfect">—</div>
-                <div class="metric-sub" id="m-perfect-pct">10/10 habits</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">Current streak</div>
-                <div class="metric-value" id="m-streak">—</div>
-                <div class="metric-sub">consecutive days</div>
-            </div>
-            <div class="metric">
-                <div class="metric-label">7-day avg</div>
-                <div class="metric-value" id="m-avg">—</div>
-                <div class="metric-sub" id="m-improvement">habits / day</div>
+            <div class="charts">
+                <div class="chart-card">
+                    <div class="chart-title">Wheel of life — avg by area</div>
+                    <div class="chart-wrap"><canvas id="radarChart" role="img"
+                            aria-label="Radar chart of life areas"></canvas></div>
+                    <div class="legend" id="radar-legend"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Score distribution — days by score</div>
+                    <div class="chart-wrap"><canvas id="donutChart" role="img"
+                            aria-label="Donut chart of score distribution"></canvas></div>
+                    <div class="legend" id="donut-legend"></div>
+                </div>
             </div>
         </div>
-        <div class="charts">
-            <div class="chart-card">
-                <div class="chart-title">Wheel of life — avg by area</div>
-                <div class="chart-wrap"><canvas id="radarChart" role="img"
-                        aria-label="Radar chart of life areas"></canvas></div>
-                <div class="legend" id="radar-legend"></div>
+    </div>
+
+    <!-- ═══════════════════ TAB: JOURNALING ═══════════════════ -->
+    <div class="tab-content" id="tab-journal">
+        <div id="j-loading" class="state">Fetching journaling data…</div>
+        <div id="j-error" class="state" style="display:none;color:var(--red);"></div>
+
+        <div id="j-dashboard" style="display:none;">
+
+            <!-- AI Insight -->
+            <div class="insight-card">
+                <div class="insight-label">✦ AI Insight</div>
+                <div class="insight-text" id="ai-insight">Analyzing your journals…</div>
             </div>
-            <div class="chart-card">
-                <div class="chart-title">Score distribution — days by score</div>
-                <div class="chart-wrap"><canvas id="donutChart" role="img"
-                        aria-label="Donut chart of score distribution"></canvas></div>
-                <div class="legend" id="donut-legend"></div>
+
+            <!-- Metrics -->
+            <div class="metrics" style="margin-bottom:14px;">
+                <div class="metric">
+                    <div class="metric-label">Total entries</div>
+                    <div class="metric-value" id="j-entries">—</div>
+                    <div class="metric-sub">journal pages</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total words</div>
+                    <div class="metric-value" id="j-words">—</div>
+                    <div class="metric-sub">written</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Avg per entry</div>
+                    <div class="metric-value" id="j-avg">—</div>
+                    <div class="metric-sub">words</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">AM / PM split</div>
+                    <div class="metric-value" id="j-split">—</div>
+                    <div class="metric-sub" id="j-split-sub">morning vs evening</div>
+                </div>
+            </div>
+
+            <div class="charts">
+                <!-- Word Cloud -->
+                <div class="chart-card">
+                    <div class="chart-title">Word cloud — top concepts</div>
+                    <div class="chart-wrap tall" id="wordCloudWrap">
+                        <canvas id="wordCloudCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Polar Area: AM vs PM sections -->
+                <div class="chart-card">
+                    <div class="chart-title">Section balance — AM vs PM depth</div>
+                    <div class="chart-wrap tall"><canvas id="polarChart" role="img"
+                            aria-label="Polar area chart of AM vs PM writing balance"></canvas></div>
+                    <div class="legend" id="polar-legend"></div>
+                </div>
+
+                <!-- Line: word count over time -->
+                <div class="chart-card full">
+                    <div class="chart-title">Writing volume — words per entry over time</div>
+                    <div class="chart-wrap"><canvas id="lineChart" role="img"
+                            aria-label="Line chart of word count per journal entry"></canvas></div>
+                </div>
+
+                <!-- Bubble: top words -->
+                <div class="chart-card">
+                    <div class="chart-title">Top words — frequency bubble chart</div>
+                    <div class="chart-wrap tall"><canvas id="bubbleChart" role="img"
+                            aria-label="Bubble chart of most frequent words"></canvas></div>
+                </div>
+
+                <!-- Heat map -->
+                <div class="chart-card">
+                    <div class="chart-title">Writing calendar — entry activity</div>
+                    <div id="heatmap-container" style="padding:4px 0;overflow-x:auto;"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // ── GLOBALS ──────────────────────────────────────────────────────────────────
         const AREA_COLORS = ['#7F77DD', '#1D9E75', '#378ADD', '#E24B4A', '#BA7517', '#D4537E'];
-        let radarChart = null, donutChart = null;
+        let radarChart = null, donutChart = null, polarChart = null, lineChart = null, bubbleChart = null;
+        let habitsLoaded = false, journalLoaded = false;
 
-        function render(data) {
+        // ── TABS ─────────────────────────────────────────────────────────────────────
+        function switchTab(name) {
+            document.querySelectorAll('.tab').forEach((t, i) => {
+                const n = ['habits', 'journal'][i];
+                t.classList.toggle('active', n === name);
+            });
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            if (name === 'journal' && !journalLoaded) loadJournaling();
+        }
+
+        // ── HABITS ────────────────────────────────────────────────────────────────────
+        async function loadHabits() {
+            try {
+                const res = await fetch('data.json?t=' + Date.now());
+                if (!res.ok) throw new Error('data.json not found — run "Fetch Notion Data" action first.');
+                const data = await res.json();
+                renderHabits(data);
+                document.getElementById('updated-at').textContent = 'Last updated: ' + new Date(data.updatedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                habitsLoaded = true;
+            } catch (e) {
+                document.getElementById('h-loading').style.display = 'none';
+                show('h-error', e.message);
+            }
+        }
+
+        function renderHabits(data) {
             const startVal = document.getElementById('start-date').value;
             let dayNum = data.daysLogged;
-            if (startVal) {
-                const diff = Math.floor((Date.now() - new Date(startVal)) / 86400000) + 1;
-                dayNum = Math.max(1, Math.min(diff, 100));
-            }
+            if (startVal) { const diff = Math.floor((Date.now() - new Date(startVal)) / 86400000) + 1; dayNum = Math.max(1, Math.min(diff, 100)); }
             document.getElementById('m-day').textContent = dayNum;
-
             document.getElementById('m-perfect').textContent = data.perfectDays;
             document.getElementById('m-perfect').className = 'metric-value ' + (data.perfectDays >= 5 ? 'good' : data.perfectDays >= 2 ? 'warn' : '');
-            document.getElementById('m-perfect-pct').textContent = data.daysLogged > 0 ? Math.round(data.perfectDays / data.daysLogged * 100) + '% of days logged' : '10/10 habits';
-
+            document.getElementById('m-perfect-pct').textContent = data.daysLogged > 0 ? Math.round(data.perfectDays / data.daysLogged * 100) + '% of days' : '10/10 habits';
             document.getElementById('m-streak').textContent = data.streak;
             document.getElementById('m-streak').className = 'metric-value ' + (data.streak >= 7 ? 'good' : data.streak >= 3 ? 'warn' : data.streak === 0 ? 'bad' : '');
-
             document.getElementById('m-avg').textContent = data.avg7.toFixed(1);
             document.getElementById('m-avg').className = 'metric-value ' + (data.avg7 >= 8 ? 'good' : data.avg7 >= 6 ? 'warn' : 'bad');
-
-            const impEl = document.getElementById('m-improvement');
             if (data.improvement !== null) {
-                const sign = data.improvement >= 0 ? '+' : '';
-                impEl.textContent = sign + data.improvement + '% vs prev 7 days';
-                impEl.style.color = data.improvement >= 0 ? 'var(--green)' : 'var(--red)';
+                const s = data.improvement >= 0 ? '+' : '';
+                const el = document.getElementById('m-improvement');
+                el.textContent = s + data.improvement + '% vs prev 7 days';
+                el.style.color = data.improvement >= 0 ? 'var(--green)' : 'var(--red)';
             }
-
-            document.getElementById('updated-at').textContent = 'Last updated: ' + new Date(data.updatedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-
+            // Radar
             if (radarChart) radarChart.destroy();
             radarChart = new Chart(document.getElementById('radarChart'), {
                 type: 'radar',
@@ -318,10 +546,10 @@
             document.getElementById('radar-legend').innerHTML = data.areaLabels.map((l, i) =>
                 `<div class="legend-item"><div class="legend-dot" style="background:${AREA_COLORS[i]}"></div>${l}: ${data.areaAvgs[i]}%</div>`
             ).join('');
-
-            const palette = ['#E24B4A', '#E24B4A', '#E24B4A', '#BA7517', '#BA7517', '#BA7517', '#1D9E75', '#1D9E75', '#1D9E75', '#7F77DD', '#7F77DD'];
+            // Donut
+            const pal = ['#E24B4A', '#E24B4A', '#E24B4A', '#BA7517', '#BA7517', '#BA7517', '#1D9E75', '#1D9E75', '#1D9E75', '#7F77DD', '#7F77DD'];
             const dl = [], dd = [], dc = [];
-            for (let i = 10; i >= 0; i--) { if (data.scoreDist[i] > 0) { dl.push(i + '/10'); dd.push(data.scoreDist[i]); dc.push(palette[i]); } }
+            for (let i = 10; i >= 0; i--) { if (data.scoreDist[i] > 0) { dl.push(i + '/10'); dd.push(data.scoreDist[i]); dc.push(pal[i]); } }
             if (donutChart) donutChart.destroy();
             donutChart = new Chart(document.getElementById('donutChart'), {
                 type: 'doughnut',
@@ -331,34 +559,166 @@
             document.getElementById('donut-legend').innerHTML = dl.map((l, i) =>
                 `<div class="legend-item"><div class="legend-dot" style="background:${dc[i]}"></div>${l}: ${dd[i]}d</div>`
             ).join('');
-
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('h-loading').style.display = 'none';
+            document.getElementById('h-dashboard').style.display = 'block';
         }
 
-        async function loadDashboard() {
+        // ── JOURNALING ────────────────────────────────────────────────────────────────
+        async function loadJournaling() {
             try {
-                const res = await fetch('data.json?t=' + Date.now());
-                if (!res.ok) throw new Error('data.json not found — run the "Fetch Notion Data" GitHub Action first to generate it.');
+                const res = await fetch('journaling-data.json?t=' + Date.now());
+                if (!res.ok) throw new Error('journaling-data.json not found — run "Fetch Journaling Data" action first.');
                 const data = await res.json();
-                render(data);
+                renderJournaling(data);
+                journalLoaded = true;
             } catch (e) {
-                document.getElementById('loading').style.display = 'none';
-                const err = document.getElementById('error');
-                err.style.display = 'block';
-                err.textContent = e.message;
+                document.getElementById('j-loading').style.display = 'none';
+                show('j-error', e.message);
             }
         }
 
+        function renderJournaling(data) {
+            // Metrics
+            document.getElementById('j-entries').textContent = data.totalEntries;
+            document.getElementById('j-words').textContent = data.totalWords.toLocaleString();
+            document.getElementById('j-avg').textContent = data.avgWordsPerEntry;
+            document.getElementById('j-split').textContent = data.sectionBalance.am.pct + '%';
+            document.getElementById('j-split-sub').textContent = `AM · ${data.sectionBalance.pm.pct}% PM`;
+
+            // AI Insight
+            const insightEl = document.getElementById('ai-insight');
+            if (data.aiInsight) {
+                insightEl.textContent = data.aiInsight;
+                insightEl.classList.remove('loading');
+            } else {
+                insightEl.textContent = 'Not enough data yet — keep journaling to unlock AI insights.';
+                insightEl.classList.add('loading');
+            }
+
+            // Word Cloud
+            if (data.wordFrequency && data.wordFrequency.length > 0) {
+                const wrap = document.getElementById('wordCloudWrap');
+                const canvas = document.getElementById('wordCloudCanvas');
+                canvas.width = wrap.offsetWidth || 400;
+                canvas.height = wrap.offsetHeight || 280;
+                const maxCount = data.wordFrequency[0].count || 1;
+                const list = data.wordFrequency.slice(0, 60).map(w => [w.word, Math.round(10 + w.count / maxCount * 40)]);
+                const colors = ['#7F77DD', '#1D9E75', '#378ADD', '#D4537E', '#BA7517', '#E24B4A'];
+                WordCloud(canvas, { list, gridSize: 8, weightFactor: 1, fontFamily: 'sans-serif', color: () => colors[Math.floor(Math.random() * colors.length)], rotateRatio: 0.3, backgroundColor: 'transparent', minSize: 10 });
+            }
+
+            // Polar: AM vs PM
+            const amPct = data.sectionBalance.am.pct;
+            const pmPct = data.sectionBalance.pm.pct;
+            if (polarChart) polarChart.destroy();
+            polarChart = new Chart(document.getElementById('polarChart'), {
+                type: 'polarArea',
+                data: {
+                    labels: ['AM — Morning ritual', 'PM — Evening debrief'],
+                    datasets: [{ data: [amPct, pmPct], backgroundColor: ['rgba(127,119,221,0.6)', 'rgba(29,158,117,0.6)'], borderColor: ['#7F77DD', '#1D9E75'], borderWidth: 1.5 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.07)' } } } }
+            });
+            document.getElementById('polar-legend').innerHTML = [
+                { l: 'AM — Morning ritual', c: '#7F77DD', v: amPct + '%' },
+                { l: 'PM — Evening debrief', c: '#1D9E75', v: pmPct + '%' }
+            ].map(x => `<div class="legend-item"><div class="legend-dot" style="background:${x.c}"></div>${x.l}: ${x.v}</div>`).join('');
+
+            // Line: word count over time
+            if (lineChart) lineChart.destroy();
+            const lineLabels = data.wordsByDate.map(d => d.date ? new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '?');
+            const lineCounts = data.wordsByDate.map(d => d.count);
+            lineChart = new Chart(document.getElementById('lineChart'), {
+                type: 'line',
+                data: { labels: lineLabels, datasets: [{ label: 'Words', data: lineCounts, borderColor: '#7F77DD', backgroundColor: 'rgba(127,119,221,0.08)', borderWidth: 1.5, pointRadius: 3, pointBackgroundColor: '#7F77DD', tension: 0.3, fill: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+            });
+
+            // Bubble: top words
+            if (bubbleChart) bubbleChart.destroy();
+            const top = data.wordFrequency.slice(0, 20);
+            const maxC = top[0]?.count || 1;
+            const cols = ['#7F77DD', '#1D9E75', '#378ADD', '#E24B4A', '#BA7517', '#D4537E'];
+            const bubbleDatasets = top.map((w, i) => ({
+                label: w.word,
+                data: [{ x: (i % 5) * 20 + 10 + (Math.random() - 0.5) * 6, y: Math.floor(i / 5) * 22 + 15 + (Math.random() - 0.5) * 4, r: Math.max(6, Math.round(w.count / maxC * 28)) }],
+                backgroundColor: cols[i % cols.length] + '99',
+                borderColor: cols[i % cols.length],
+                borderWidth: 1,
+            }));
+            bubbleChart = new Chart(document.getElementById('bubbleChart'), {
+                type: 'bubble',
+                data: { datasets: bubbleDatasets },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${top[ctx.datasetIndex].count}x` } } }, scales: { x: { display: false }, y: { display: false } }, layout: { padding: 10 } }
+            });
+
+            // Heat map
+            renderHeatmap(data.heatmapData);
+
+            document.getElementById('j-loading').style.display = 'none';
+            document.getElementById('j-dashboard').style.display = 'block';
+        }
+
+        function renderHeatmap(heatmapData) {
+            const container = document.getElementById('heatmap-container');
+            if (!heatmapData || heatmapData.length === 0) { container.innerHTML = '<div style="color:var(--muted);font-size:11px;padding:20px 0;">No data yet</div>'; return; }
+
+            // Build date map
+            const dateMap = {};
+            for (const d of heatmapData) { if (d.date) dateMap[d.date] = d.count; }
+            const maxCount = Math.max(...Object.values(dateMap), 1);
+
+            // Generate last 16 weeks
+            const today = new Date();
+            const start = new Date(today);
+            start.setDate(start.getDate() - (16 * 7 - 1));
+
+            let html = '<div class="heatmap-grid">';
+            const cur = new Date(start);
+            while (cur <= today) {
+                const key = cur.toISOString().slice(0, 10);
+                const count = dateMap[key] || 0;
+                let level = 0;
+                if (count > 0) level = count > maxCount * 0.75 ? 4 : count > maxCount * 0.5 ? 3 : count > maxCount * 0.25 ? 2 : 1;
+                const label = key + (count > 0 ? ' — ' + count + ' words' : '');
+                html += `<div class="heatmap-cell level-${level}" title="${label}"></div>`;
+                cur.setDate(cur.getDate() + 1);
+            }
+            html += '</div>';
+
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            html += '<div style="display:flex;gap:8px;margin-top:8px;font-size:10px;color:var(--muted);">';
+            html += '<span>Less</span>';
+            [0, 1, 2, 3, 4].forEach(l => html += `<div class="heatmap-cell level-${l}" style="width:10px;height:10px;display:inline-block;"></div>`);
+            html += '<span>More</span></div>';
+
+            container.innerHTML = html;
+        }
+
+        // ── UTILS ─────────────────────────────────────────────────────────────────────
+        function show(id, msg) { const el = document.getElementById(id); el.style.display = 'block'; el.textContent = msg; }
+
+        async function loadAll() {
+            habitsLoaded = false;
+            journalLoaded = false;
+            document.getElementById('h-loading').style.display = 'block';
+            document.getElementById('h-dashboard').style.display = 'none';
+            document.getElementById('h-error').style.display = 'none';
+            await loadHabits();
+            const activeTab = document.querySelector('.tab.active');
+            if (activeTab && activeTab.textContent.includes('Journal')) loadJournaling();
+        }
+
+        // ── INIT ──────────────────────────────────────────────────────────────────────
         const saved = localStorage.getItem('lb_start');
         if (saved) document.getElementById('start-date').value = saved;
         document.getElementById('start-date').addEventListener('change', e => {
             localStorage.setItem('lb_start', e.target.value);
-            loadDashboard();
+            if (habitsLoaded) loadHabits();
         });
 
-        loadDashboard();
-        setInterval(loadDashboard, 5 * 60 * 1000);
+        loadHabits();
+        setInterval(() => { loadHabits(); if (journalLoaded) loadJournaling(); }, 5 * 60 * 1000);
     </script>
 </body>
 
