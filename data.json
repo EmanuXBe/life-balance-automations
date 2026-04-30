@@ -1,0 +1,37 @@
+{
+  "updatedAt": "2026-04-30T15:24:25.051Z",
+  "daysLogged": 1,
+  "perfectDays": 1,
+  "streak": 1,
+  "avg7": 10,
+  "improvement": null,
+  "scoreDist": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+  ],
+  "areaLabels": [
+    "Spiritual",
+    "Physical",
+    "Intellectual",
+    "Character",
+    "Execution",
+    "Creative"
+  ],
+  "areaAvgs": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+  ]
+}
