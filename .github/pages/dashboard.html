@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Life Balance — Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --surface: #1a1a1a;
+            --surface2: #222222;
+            --border: rgba(255, 255, 255, 0.07);
+            --text: #f0f0f0;
+            --muted: rgba(255, 255, 255, 0.4);
+            --accent: #7F77DD;
+            --green: #1D9E75;
+            --red: #E24B4A;
+            --amber: #BA7517;
+            --blue: #378ADD;
+            --pink: #D4537E;
+            --radius: 10px;
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 13px;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .setup {
+            max-width: 480px;
+            margin: 60px auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+        }
+
+        .setup h1 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .setup p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .setup label {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .setup input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 12px;
+            padding: 9px 12px;
+            margin-bottom: 14px;
+            outline: none;
+            font-family: monospace;
+        }
+
+        .setup input:focus {
+            border-color: var(--accent);
+        }
+
+        .btn {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: var(--red);
+            font-size: 11px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .metric {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 500;
+            line-height: 1;
+        }
+
+        .metric-sub {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .metric-value.good {
+            color: var(--green);
+        }
+
+        .metric-value.warn {
+            color: var(--amber);
+        }
+
+        .metric-value.bad {
+            color: var(--red);
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .chart-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+
+        .chart-title {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 14px;
+        }
+
+        .chart-wrap {
+            position: relative;
+            width: 100%;
+            height: 220px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .week-bar {
+            margin-bottom: 16px;
+        }
+
+        .week-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .week-track {
+            height: 6px;
+            background: var(--surface2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .week-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--accent);
+            transition: width 0.6s ease;
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            float: right;
+            margin-top: -2px;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .refresh-btn:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .header-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .header-sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Setup screen -->
+    <div class="setup" id="setup">
+        <h1>Life Balance Dashboard</h1>
+        <p>Connect your Notion database to display your 100 Days Challenge metrics and Wheel of Life chart.</p>
+
+        <label>Notion Integration Token</label>
+        <input type="password" id="token" placeholder="secret_xxxxxxxxxxxx" />
+
+        <label>Daily 10 Database ID</label>
+        <input type="text" id="dbId" placeholder="44523e8b5d1e4f31994bacb17ace7a45" />
+
+        <label>Challenge Start Date</label>
+        <input type="date" id="startDate" />
+
+        <button class="btn" id="connectBtn" onclick="connect()">Connect to Notion</button>
+        <div class="error" id="errMsg"></div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="header">
+            <div>
+                <div class="header-title">100 Days Challenge</div>
+                <div class="header-sub" id="dateRange">—</div>
+            </div>
+            <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+        </div>
+
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-label">Current day</div>
+                <div class="metric-value" id="m-day">—</div>
+                <div class="metric-sub">of 100</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Perfect days</div>
+                <div class="metric-value" id="m-perfect">—</div>
+                <div class="metric-sub" id="m-perfect-pct">10/10 habits</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Current streak</div>
+                <div class="metric-value" id="m-streak">—</div>
+                <div class="metric-sub">consecutive days</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">7-day avg</div>
+                <div class="metric-value" id="m-avg">—</div>
+                <div class="metric-sub" id="m-improvement">habits / day</div>
+            </div>
+        </div>
+
+        <div class="charts">
+            <div class="chart-card">
+                <div class="chart-title">Wheel of life — avg by area</div>
+                <div class="chart-wrap">
+                    <canvas id="radarChart" role="img"
+                        aria-label="Radar chart showing average performance by life area"></canvas>
+                </div>
+                <div class="legend" id="radar-legend"></div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Score distribution — days by score</div>
+                <div class="chart-wrap">
+                    <canvas id="donutChart" role="img"
+                        aria-label="Donut chart showing how many days had each score"></canvas>
+                </div>
+                <div class="legend" id="donut-legend"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const AREAS = [
+            { key: 'spiritual', label: 'Spiritual', color: '#7F77DD', props: ['⛪ Oración (45-60 min)'] },
+            { key: 'physical', label: 'Physical', color: '#1D9E75', props: ['🚲 Entrenamiento (Gym / 40km Bici)', '❄️ Ducha Fría', '😴 Apagón 9:30PM / Despertar 4:30AM'] },
+            { key: 'intellectual', label: 'Intellectual', color: '#378ADD', props: ['📚 Lectura (10 págs)', '💻 Deep Work (90+ min)'] },
+            { key: 'character', label: 'Character', color: '#E24B4A', props: ['🚫 Pureza (Cero Alcohol / Cero Dopamina Barata)'] },
+            { key: 'execution', label: 'Execution', color: '#BA7517', props: ['🗓️ Planificación del Día Siguiente', '✍️ Journaling Mañana/Noche'] },
+            { key: 'creative', label: 'Creative', color: '#D4537E', props: ['🎹 Sesión de Música (Piano/Guitarra)'] },
+        ];
+
+        const ALL_HABIT_PROPS = [
+            '⛪ Oración (45-60 min)',
+            '🚲 Entrenamiento (Gym / 40km Bici)',
+            '❄️ Ducha Fría',
+            '😴 Apagón 9:30PM / Despertar 4:30AM',
+            '📚 Lectura (10 págs)',
+            '💻 Deep Work (90+ min)',
+            '🚫 Pureza (Cero Alcohol / Cero Dopamina Barata)',
+            '🗓️ Planificación del Día Siguiente',
+            '✍️ Journaling Mañana/Noche',
+            '🎹 Sesión de Música (Piano/Guitarra)',
+        ];
+
+        let token = '', dbId = '', startDate = null;
+        let radarChart = null, donutChart = null;
+
+        // Persist config in localStorage
+        function saveConfig() {
+            localStorage.setItem('lb_token', token);
+            localStorage.setItem('lb_dbId', dbId);
+            localStorage.setItem('lb_start', document.getElementById('startDate').value);
+        }
+
+        function loadConfig() {
+            token = localStorage.getItem('lb_token') || '';
+            dbId = localStorage.getItem('lb_dbId') || '';
+            const start = localStorage.getItem('lb_start') || '';
+            if (token && dbId) {
+                document.getElementById('token').value = token;
+                document.getElementById('dbId').value = dbId;
+                document.getElementById('startDate').value = start;
+                return true;
+            }
+            return false;
+        }
+
+        async function connect() {
+            token = document.getElementById('token').value.trim();
+            dbId = document.getElementById('dbId').value.trim().replace(/-/g, '');
+            const err = document.getElementById('errMsg');
+            const btn = document.getElementById('connectBtn');
+            err.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'Connecting...';
+            try {
+                await loadData();
+                saveConfig();
+            } catch (e) {
+                err.textContent = 'Connection failed: ' + e.message;
+                err.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Connect to Notion';
+            }
+        }
+
+        async function notionQuery(payload) {
+            const res = await fetch(`https://api.notion.com/v1/databases/${dbId}/query`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Notion-Version': '2022-06-28',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) {
+                const e = await res.json();
+                throw new Error(e.message || 'Notion API error');
+            }
+            return res.json();
+        }
+
+        function getCheck(page, propName) {
+            const p = page.properties[propName];
+            return p && p.checkbox ? 1 : 0;
+        }
+
+        function getScore(page) {
+            return ALL_HABIT_PROPS.reduce((acc, p) => acc + getCheck(page, p), 0);
+        }
+
+        function getAreaScore(page, area) {
+            const total = area.props.reduce((acc, p) => acc + getCheck(page, p), 0);
+            return Math.round((total / area.props.length) * 100);
+        }
+
+        async function loadData() {
+            const allPages = [];
+            let cursor = undefined;
+            do {
+                const payload = { page_size: 100, sorts: [{ property: 'Fecha', direction: 'ascending' }] };
+                if (cursor) payload.start_cursor = cursor;
+                const res = await notionQuery(payload);
+                allPages.push(...res.results);
+                cursor = res.has_more ? res.next_cursor : undefined;
+            } while (cursor);
+
+            if (allPages.length === 0) {
+                renderEmpty();
+                return;
+            }
+
+            // Current day of challenge
+            const startVal = document.getElementById('startDate').value;
+            startDate = startVal ? new Date(startVal) : null;
+            const today = new Date();
+            const dayNum = startDate ? Math.max(1, Math.min(Math.floor((today - startDate) / 86400000) + 1, 100)) : allPages.length;
+
+            // Scores per day
+            const scores = allPages.map(p => getScore(p));
+
+            // Perfect days (score = 10)
+            const perfectDays = scores.filter(s => s === 10).length;
+
+            // Streak (count consecutive days from the end with score >= 1)
+            let streak = 0;
+            for (let i = scores.length - 1; i >= 0; i--) {
+                if (scores[i] >= 1) streak++;
+                else break;
+            }
+
+            // 7-day avg
+            const last7 = scores.slice(-7);
+            const avg7 = last7.length > 0 ? last7.reduce((a, b) => a + b, 0) / last7.length : 0;
+
+            // Previous 7-day avg (for improvement %)
+            const prev7 = scores.slice(-14, -7);
+            const prevAvg = prev7.length > 0 ? prev7.reduce((a, b) => a + b, 0) / prev7.length : null;
+            let improvement = null;
+            if (prevAvg !== null && prevAvg > 0) {
+                improvement = Math.round(((avg7 - prevAvg) / prevAvg) * 100);
+            }
+
+            // Area scores (avg across all days)
+            const areaAvgs = AREAS.map(area => {
+                const vals = allPages.map(p => getAreaScore(p, area));
+                return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+            });
+
+            // Score distribution (0-10)
+            const scoreDist = Array(11).fill(0);
+            scores.forEach(s => scoreDist[s]++);
+
+            renderMetrics(dayNum, perfectDays, allPages.length, streak, avg7, improvement);
+            renderRadar(areaAvgs);
+            renderDonut(scoreDist);
+
+            if (startDate) {
+                const opts = { month: 'short', day: 'numeric' };
+                const endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 99);
+                document.getElementById('dateRange').textContent =
+                    startDate.toLocaleDateString('en-US', opts) + ' → ' + endDate.toLocaleDateString('en-US', opts);
+            }
+
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('connectBtn').disabled = false;
+            document.getElementById('connectBtn').textContent = 'Connect to Notion';
+        }
+
+        function scoreColor(avg) {
+            if (avg >= 8) return '#1D9E75';
+            if (avg >= 6) return '#BA7517';
+            return '#E24B4A';
+        }
+
+        function renderMetrics(day, perfect, logged, streak, avg7, improvement) {
+            document.getElementById('m-day').textContent = day;
+            document.getElementById('m-day').className = 'metric-value';
+
+            document.getElementById('m-perfect').textContent = perfect;
+            document.getElementById('m-perfect').className = 'metric-value ' + (perfect >= 5 ? 'good' : perfect >= 2 ? 'warn' : '');
+            document.getElementById('m-perfect-pct').textContent = logged > 0 ? Math.round(perfect / logged * 100) + '% of days logged' : '10/10 habits';
+
+            document.getElementById('m-streak').textContent = streak;
+            document.getElementById('m-streak').className = 'metric-value ' + (streak >= 7 ? 'good' : streak >= 3 ? 'warn' : streak === 0 ? 'bad' : '');
+
+            document.getElementById('m-avg').textContent = avg7.toFixed(1);
+            document.getElementById('m-avg').className = 'metric-value ' + (avg7 >= 8 ? 'good' : avg7 >= 6 ? 'warn' : 'bad');
+
+            if (improvement !== null) {
+                const sign = improvement >= 0 ? '+' : '';
+                document.getElementById('m-improvement').textContent = sign + improvement + '% vs prev 7 days';
+            } else {
+                document.getElementById('m-improvement').textContent = 'habits / day';
+            }
+        }
+
+        function renderRadar(areaAvgs) {
+            const labels = AREAS.map(a => a.label);
+            const colors = AREAS.map(a => a.color);
+
+            if (radarChart) radarChart.destroy();
+            radarChart = new Chart(document.getElementById('radarChart'), {
+                type: 'radar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Avg %',
+                        data: areaAvgs,
+                        backgroundColor: 'rgba(127,119,221,0.12)',
+                        borderColor: '#7F77DD',
+                        borderWidth: 1.5,
+                        pointBackgroundColor: colors,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        r: {
+                            min: 0, max: 100,
+                            ticks: { stepSize: 25, color: 'rgba(255,255,255,0.3)', font: { size: 9 }, backdropColor: 'transparent' },
+                            grid: { color: 'rgba(255,255,255,0.07)' },
+                            angleLines: { color: 'rgba(255,255,255,0.07)' },
+                            pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            const leg = document.getElementById('radar-legend');
+            leg.innerHTML = AREAS.map((a, i) =>
+                `<div class="legend-item"><div class="legend-dot" style="background:${a.color}"></div>${a.label}: ${areaAvgs[i]}%</div>`
+            ).join('');
+        }
+
+        function renderDonut(scoreDist) {
+            const labels = [], data = [], colors = [];
+            const palette = ['#E24B4A', '#E24B4A', '#BA7517', '#BA7517', '#BA7517', '#BA7517', '#1D9E75', '#1D9E75', '#1D9E75', '#7F77DD', '#7F77DD'];
+
+            for (let i = 10; i >= 0; i--) {
+                if (scoreDist[i] > 0) {
+                    labels.push(i + '/10');
+                    data.push(scoreDist[i]);
+                    colors.push(palette[i]);
+                }
+            }
+
+            if (donutChart) donutChart.destroy();
+            donutChart = new Chart(document.getElementById('donutChart'), {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        backgroundColor: colors,
+                        borderColor: '#1a1a1a',
+                        borderWidth: 2,
+                        hoverOffset: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '62%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            const leg = document.getElementById('donut-legend');
+            leg.innerHTML = labels.map((l, i) =>
+                `<div class="legend-item"><div class="legend-dot" style="background:${colors[i]}"></div>${l}: ${data[i]}d</div>`
+            ).join('');
+        }
+
+        function renderEmpty() {
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            ['m-day', 'm-perfect', 'm-streak', 'm-avg'].forEach(id => document.getElementById(id).textContent = '0');
+        }
+
+        // Auto-connect if config saved
+        window.addEventListener('load', () => {
+            if (loadConfig()) connect();
+        });
+    </script>
+</body>
+
+</html>
