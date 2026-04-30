@@ -1,0 +1,33 @@
+name: Fetch Journaling Data — Dashboard
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # every 15 minutes
+  workflow_dispatch:
+
+jobs:
+  fetch-journaling:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Fetch journaling data from Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_JOURNALING_DB_ID: ${{ secrets.NOTION_JOURNALING_DB_ID }}
+        run: node fetch-journaling-data.js
+
+      - name: Commit journaling-data.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add journaling-data.json
+          git diff --cached --quiet || git commit -m "chore: update journaling data [skip ci]"
+          git push
