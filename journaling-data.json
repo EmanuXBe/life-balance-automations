@@ -1,0 +1,431 @@
+{
+  "updatedAt": "2026-04-30T16:34:12.585Z",
+  "totalEntries": 1,
+  "totalWords": 383,
+  "avgWordsPerEntry": 383,
+  "wordFrequency": [
+    {
+      "word": "section",
+      "count": 11
+    },
+    {
+      "word": "strategic",
+      "count": 4
+    },
+    {
+      "word": "todays",
+      "count": 3
+    },
+    {
+      "word": "strength",
+      "count": 3
+    },
+    {
+      "word": "specific",
+      "count": 3
+    },
+    {
+      "word": "must",
+      "count": 3
+    },
+    {
+      "word": "move",
+      "count": 3
+    },
+    {
+      "word": "task",
+      "count": 3
+    },
+    {
+      "word": "professional",
+      "count": 3
+    },
+    {
+      "word": "lead",
+      "count": 3
+    },
+    {
+      "word": "alignment",
+      "count": 2
+    },
+    {
+      "word": "daily",
+      "count": 2
+    },
+    {
+      "word": "reflections",
+      "count": 2
+    },
+    {
+      "word": "anchor",
+      "count": 2
+    },
+    {
+      "word": "divine",
+      "count": 2
+    },
+    {
+      "word": "market",
+      "count": 2
+    },
+    {
+      "word": "insights",
+      "count": 2
+    },
+    {
+      "word": "vision",
+      "count": 2
+    },
+    {
+      "word": "goal",
+      "count": 2
+    },
+    {
+      "word": "tracking",
+      "count": 2
+    },
+    {
+      "word": "effort",
+      "count": 2
+    },
+    {
+      "word": "execution",
+      "count": 2
+    },
+    {
+      "word": "next",
+      "count": 2
+    },
+    {
+      "word": "actions",
+      "count": 2
+    },
+    {
+      "word": "connections",
+      "count": 2
+    },
+    {
+      "word": "declaration",
+      "count": 2
+    },
+    {
+      "word": "truth",
+      "count": 2
+    },
+    {
+      "word": "tomorrows",
+      "count": 2
+    },
+    {
+      "word": "founders",
+      "count": 1
+    },
+    {
+      "word": "operating",
+      "count": 1
+    },
+    {
+      "word": "order",
+      "count": 1
+    },
+    {
+      "word": "authority",
+      "count": 1
+    },
+    {
+      "word": "expansion",
+      "count": 1
+    },
+    {
+      "word": "spiritual",
+      "count": 1
+    },
+    {
+      "word": "rhema",
+      "count": 1
+    },
+    {
+      "word": "concise",
+      "count": 1
+    },
+    {
+      "word": "biblical",
+      "count": 1
+    },
+    {
+      "word": "visionary",
+      "count": 1
+    },
+    {
+      "word": "mandate",
+      "count": 1
+    },
+    {
+      "word": "kingdom",
+      "count": 1
+    },
+    {
+      "word": "surrender",
+      "count": 1
+    },
+    {
+      "word": "pressure",
+      "count": 1
+    },
+    {
+      "word": "egodriven",
+      "count": 1
+    },
+    {
+      "word": "impulse",
+      "count": 1
+    },
+    {
+      "word": "yield",
+      "count": 1
+    },
+    {
+      "word": "operate",
+      "count": 1
+    },
+    {
+      "word": "signal",
+      "count": 1
+    },
+    {
+      "word": "trend",
+      "count": 1
+    },
+    {
+      "word": "shift",
+      "count": 1
+    },
+    {
+      "word": "lord",
+      "count": 1
+    },
+    {
+      "word": "highlighting",
+      "count": 1
+    },
+    {
+      "word": "industry",
+      "count": 1
+    },
+    {
+      "word": "competitive",
+      "count": 1
+    },
+    {
+      "word": "edge",
+      "count": 1
+    },
+    {
+      "word": "compounds",
+      "count": 1
+    },
+    {
+      "word": "longterm",
+      "count": 1
+    },
+    {
+      "word": "apex",
+      "count": 1
+    },
+    {
+      "word": "targets",
+      "count": 1
+    },
+    {
+      "word": "quarterly",
+      "count": 1
+    },
+    {
+      "word": "needle",
+      "count": 1
+    },
+    {
+      "word": "objectives",
+      "count": 1
+    },
+    {
+      "word": "nonnegotiable",
+      "count": 1
+    },
+    {
+      "word": "define",
+      "count": 1
+    },
+    {
+      "word": "three",
+      "count": 1
+    },
+    {
+      "word": "critical",
+      "count": 1
+    },
+    {
+      "word": "moves",
+      "count": 1
+    },
+    {
+      "word": "guarantee",
+      "count": 1
+    },
+    {
+      "word": "victory",
+      "count": 1
+    },
+    {
+      "word": "block",
+      "count": 1
+    },
+    {
+      "word": "intentions",
+      "count": 1
+    },
+    {
+      "word": "startup",
+      "count": 1
+    },
+    {
+      "word": "project",
+      "count": 1
+    },
+    {
+      "word": "attack",
+      "count": 1
+    },
+    {
+      "word": "antifatigue",
+      "count": 1
+    },
+    {
+      "word": "catalyst",
+      "count": 1
+    },
+    {
+      "word": "single",
+      "count": 1
+    },
+    {
+      "word": "important",
+      "count": 1
+    },
+    {
+      "word": "execute",
+      "count": 1
+    },
+    {
+      "word": "first",
+      "count": 1
+    },
+    {
+      "word": "distraction",
+      "count": 1
+    },
+    {
+      "word": "aggressively",
+      "count": 1
+    },
+    {
+      "word": "rejecting",
+      "count": 1
+    },
+    {
+      "word": "alliance",
+      "count": 1
+    },
+    {
+      "word": "cover",
+      "count": 1
+    },
+    {
+      "word": "align",
+      "count": 1
+    },
+    {
+      "word": "seed",
+      "count": 1
+    },
+    {
+      "word": "networking",
+      "count": 1
+    },
+    {
+      "word": "expand",
+      "count": 1
+    },
+    {
+      "word": "ecosystem",
+      "count": 1
+    },
+    {
+      "word": "selfsufficiency",
+      "count": 1
+    },
+    {
+      "word": "clarity",
+      "count": 1
+    },
+    {
+      "word": "ruthless",
+      "count": 1
+    },
+    {
+      "word": "secured",
+      "count": 1
+    },
+    {
+      "word": "executive",
+      "count": 1
+    },
+    {
+      "word": "debrief",
+      "count": 1
+    },
+    {
+      "word": "roi",
+      "count": 1
+    },
+    {
+      "word": "mental",
+      "count": 1
+    },
+    {
+      "word": "handoff",
+      "count": 1
+    },
+    {
+      "word": "audit",
+      "count": 1
+    },
+    {
+      "word": "wins",
+      "count": 1
+    }
+  ],
+  "wordsByDate": [
+    {
+      "date": null,
+      "count": 383
+    }
+  ],
+  "heatmapData": [
+    {
+      "date": null,
+      "count": 383
+    }
+  ],
+  "sectionBalance": {
+    "am": {
+      "words": 114,
+      "pct": 62
+    },
+    "pm": {
+      "words": 71,
+      "pct": 38
+    }
+  },
+  "aiInsight": "This month you're strengthening your spiritual clarity but need to give more attention to your financial focus."
+}
