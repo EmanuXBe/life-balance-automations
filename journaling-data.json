@@ -1,30 +1,311 @@
 {
-  "updatedAt": "2026-04-30T16:44:14.586Z",
+  "updatedAt": "2026-04-30T17:11:40.649Z",
   "totalEntries": 1,
-  "totalWords": 0,
-  "avgWordsPerEntry": 0,
-  "wordFrequency": [],
+  "totalWords": 169,
+  "avgWordsPerEntry": 169,
+  "wordFrequency": [
+    {
+      "word": "change",
+      "count": 4
+    },
+    {
+      "word": "repentance",
+      "count": 2
+    },
+    {
+      "word": "things",
+      "count": 2
+    },
+    {
+      "word": "tasks",
+      "count": 2
+    },
+    {
+      "word": "meeting",
+      "count": 2
+    },
+    {
+      "word": "civora",
+      "count": 2
+    },
+    {
+      "word": "goals",
+      "count": 2
+    },
+    {
+      "word": "system",
+      "count": 2
+    },
+    {
+      "word": "literature",
+      "count": 2
+    },
+    {
+      "word": "review",
+      "count": 2
+    },
+    {
+      "word": "days",
+      "count": 2
+    },
+    {
+      "word": "lead",
+      "count": 2
+    },
+    {
+      "word": "lord",
+      "count": 1
+    },
+    {
+      "word": "slack",
+      "count": 1
+    },
+    {
+      "word": "concerning",
+      "count": 1
+    },
+    {
+      "word": "promise",
+      "count": 1
+    },
+    {
+      "word": "men",
+      "count": 1
+    },
+    {
+      "word": "count",
+      "count": 1
+    },
+    {
+      "word": "slackness",
+      "count": 1
+    },
+    {
+      "word": "longsuffering",
+      "count": 1
+    },
+    {
+      "word": "usward",
+      "count": 1
+    },
+    {
+      "word": "willing",
+      "count": 1
+    },
+    {
+      "word": "perish",
+      "count": 1
+    },
+    {
+      "word": "many",
+      "count": 1
+    },
+    {
+      "word": "wrong",
+      "count": 1
+    },
+    {
+      "word": "lastly",
+      "count": 1
+    },
+    {
+      "word": "mind",
+      "count": 1
+    },
+    {
+      "word": "desires",
+      "count": 1
+    },
+    {
+      "word": "way",
+      "count": 1
+    },
+    {
+      "word": "life",
+      "count": 1
+    },
+    {
+      "word": "believe",
+      "count": 1
+    },
+    {
+      "word": "strength",
+      "count": 1
+    },
+    {
+      "word": "stop",
+      "count": 1
+    },
+    {
+      "word": "forcing",
+      "count": 1
+    },
+    {
+      "word": "everything",
+      "count": 1
+    },
+    {
+      "word": "back",
+      "count": 1
+    },
+    {
+      "word": "original",
+      "count": 1
+    },
+    {
+      "word": "weak",
+      "count": 1
+    },
+    {
+      "word": "christ",
+      "count": 1
+    },
+    {
+      "word": "stronger",
+      "count": 1
+    },
+    {
+      "word": "move",
+      "count": 1
+    },
+    {
+      "word": "faster",
+      "count": 1
+    },
+    {
+      "word": "finalize",
+      "count": 1
+    },
+    {
+      "word": "close",
+      "count": 1
+    },
+    {
+      "word": "blockchain",
+      "count": 1
+    },
+    {
+      "word": "university",
+      "count": 1
+    },
+    {
+      "word": "people",
+      "count": 1
+    },
+    {
+      "word": "solve",
+      "count": 1
+    },
+    {
+      "word": "now",
+      "count": 1
+    },
+    {
+      "word": "assignments",
+      "count": 1
+    },
+    {
+      "word": "expected",
+      "count": 1
+    },
+    {
+      "word": "results",
+      "count": 1
+    },
+    {
+      "word": "yes",
+      "count": 1
+    },
+    {
+      "word": "jairo",
+      "count": 1
+    },
+    {
+      "word": "define",
+      "count": 1
+    },
+    {
+      "word": "schedule",
+      "count": 1
+    },
+    {
+      "word": "doesnt",
+      "count": 1
+    },
+    {
+      "word": "contribute",
+      "count": 1
+    },
+    {
+      "word": "actually",
+      "count": 1
+    },
+    {
+      "word": "personal",
+      "count": 1
+    },
+    {
+      "word": "development",
+      "count": 1
+    },
+    {
+      "word": "focussing",
+      "count": 1
+    },
+    {
+      "word": "planning",
+      "count": 1
+    },
+    {
+      "word": "next",
+      "count": 1
+    },
+    {
+      "word": "align",
+      "count": 1
+    },
+    {
+      "word": "hugo",
+      "count": 1
+    },
+    {
+      "word": "vela",
+      "count": 1
+    },
+    {
+      "word": "profe",
+      "count": 1
+    },
+    {
+      "word": "proyectos",
+      "count": 1
+    },
+    {
+      "word": "founder",
+      "count": 1
+    }
+  ],
   "wordsByDate": [
     {
-      "date": null,
-      "count": 0
+      "date": "2026-04-30",
+      "count": 169
     }
   ],
   "heatmapData": [
     {
-      "date": null,
-      "count": 0
+      "date": "2026-04-30",
+      "count": 169
     }
   ],
   "sectionBalance": {
     "am": {
-      "words": 0,
-      "pct": 0
+      "words": 84,
+      "pct": 100
     },
     "pm": {
       "words": 0,
-      "pct": 100
+      "pct": 0
     }
   },
-  "aiInsight": "This month you're strengthening your spiritual clarity but need to give more attention to your financial focus. — your evening debriefs are rich but mornings need more intention."
+  "aiInsight": "This month you're strengthening your leadership depth but need to give more attention to your strategic thinking. — your mornings are strong but evenings need more reflection."
 }
