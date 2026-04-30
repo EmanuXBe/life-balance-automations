@@ -54,6 +54,26 @@
             margin-top: 3px;
         }
 
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: color .15s, border-color .15s;
+        }
+
+        .refresh-btn:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.97);
+        }
+
         .setup-banner {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -207,6 +227,7 @@
             <div class="header-title">100 Days Challenge</div>
             <div class="header-sub" id="updated-at">Loading…</div>
         </div>
+        <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh</button>
     </div>
 
     <div class="setup-banner">
