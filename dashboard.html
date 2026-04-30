@@ -9,18 +9,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.0.6/wordcloud2.min.js"></script>
     <style>
         :root {
-            --bg: #0f0f0f;
-            --surface: #1a1a1a;
-            --surface2: #222;
-            --border: rgba(255, 255, 255, 0.07);
-            --text: #f0f0f0;
-            --muted: rgba(255, 255, 255, 0.4);
-            --accent: #7F77DD;
-            --green: #1D9E75;
-            --red: #E24B4A;
-            --amber: #BA7517;
-            --blue: #378ADD;
-            --pink: #D4537E;
+            /* Palette from the nebula header — deep space with amber fire */
+            --bg: #07080f;
+            --surface: #0d1018;
+            --surface2: #121620;
+            --border: rgba(196, 98, 26, 0.15);
+            --text: #e8e2d6;
+            --muted: rgba(232, 226, 214, 0.4);
+            --accent: #c4621a;
+            /* nebula orange */
+            --green: #1a7a5c;
+            /* deep teal */
+            --red: #b83020;
+            /* ember red */
+            --amber: #d4841e;
+            /* golden fire */
+            --blue: #1a5a7a;
+            /* starfield teal */
+            --pink: #8b3a4a;
+            /* muted rose */
             --radius: 10px;
             --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
@@ -247,7 +254,7 @@
         /* AI INSIGHT */
         .insight-card {
             background: var(--surface);
-            border: 1px solid rgba(127, 119, 221, 0.3);
+            border: 1px solid rgba(196, 98, 26, 0.35);
             border-radius: var(--radius);
             padding: 18px 20px;
             margin-bottom: 14px;
@@ -296,19 +303,19 @@
         }
 
         .heatmap-cell.level-1 {
-            background: rgba(127, 119, 221, 0.25);
+            background: rgba(196, 98, 26, 0.2);
         }
 
         .heatmap-cell.level-2 {
-            background: rgba(127, 119, 221, 0.5);
+            background: rgba(196, 98, 26, 0.45);
         }
 
         .heatmap-cell.level-3 {
-            background: rgba(127, 119, 221, 0.75);
+            background: rgba(196, 98, 26, 0.7);
         }
 
         .heatmap-cell.level-4 {
-            background: #7F77DD;
+            background: #c4621a;
         }
 
         .heatmap-months {
@@ -488,7 +495,7 @@
 
     <script>
         // ── GLOBALS ──────────────────────────────────────────────────────────────────
-        const AREA_COLORS = ['#7F77DD', '#1D9E75', '#378ADD', '#E24B4A', '#BA7517', '#D4537E'];
+        const AREA_COLORS = ['#c4621a', '#1a7a5c', '#d4841e', '#b83020', '#1a5a7a', '#8b3a4a'];
         let radarChart = null, donutChart = null, polarChart = null, lineChart = null, bubbleChart = null;
         let habitsLoaded = false, journalLoaded = false;
 
@@ -540,20 +547,20 @@
             if (radarChart) radarChart.destroy();
             radarChart = new Chart(document.getElementById('radarChart'), {
                 type: 'radar',
-                data: { labels: data.areaLabels, datasets: [{ label: 'Avg %', data: data.areaAvgs, backgroundColor: 'rgba(127,119,221,0.12)', borderColor: '#7F77DD', borderWidth: 1.5, pointBackgroundColor: AREA_COLORS, pointRadius: 4, pointHoverRadius: 6 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, color: 'rgba(255,255,255,0.3)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.07)' }, angleLines: { color: 'rgba(255,255,255,0.07)' }, pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } } } } }
+                data: { labels: data.areaLabels, datasets: [{ label: 'Avg %', data: data.areaAvgs, backgroundColor: 'rgba(196,98,26,0.1)', borderColor: '#c4621a', borderWidth: 1.5, pointBackgroundColor: AREA_COLORS, pointRadius: 4, pointHoverRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, color: 'rgba(255,255,255,0.3)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(196,98,26,0.1)' }, angleLines: { color: 'rgba(196,98,26,0.1)' }, pointLabels: { color: 'rgba(232,226,214,0.55)', font: { size: 10 } } } } }
             });
             document.getElementById('radar-legend').innerHTML = data.areaLabels.map((l, i) =>
                 `<div class="legend-item"><div class="legend-dot" style="background:${AREA_COLORS[i]}"></div>${l}: ${data.areaAvgs[i]}%</div>`
             ).join('');
             // Donut
-            const pal = ['#E24B4A', '#E24B4A', '#E24B4A', '#BA7517', '#BA7517', '#BA7517', '#1D9E75', '#1D9E75', '#1D9E75', '#7F77DD', '#7F77DD'];
+            const pal = ['#b83020', '#b83020', '#b83020', '#d4841e', '#d4841e', '#d4841e', '#1a7a5c', '#1a7a5c', '#1a7a5c', '#c4621a', '#c4621a'];
             const dl = [], dd = [], dc = [];
             for (let i = 10; i >= 0; i--) { if (data.scoreDist[i] > 0) { dl.push(i + '/10'); dd.push(data.scoreDist[i]); dc.push(pal[i]); } }
             if (donutChart) donutChart.destroy();
             donutChart = new Chart(document.getElementById('donutChart'), {
                 type: 'doughnut',
-                data: { labels: dl, datasets: [{ data: dd, backgroundColor: dc, borderColor: '#1a1a1a', borderWidth: 2, hoverOffset: 4 }] },
+                data: { labels: dl, datasets: [{ data: dd, backgroundColor: dc, borderColor: '#07080f', borderWidth: 2, hoverOffset: 4 }] },
                 options: { responsive: true, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { display: false } } }
             });
             document.getElementById('donut-legend').innerHTML = dl.map((l, i) =>
@@ -603,7 +610,7 @@
                 canvas.height = wrap.offsetHeight || 280;
                 const maxCount = data.wordFrequency[0].count || 1;
                 const list = data.wordFrequency.slice(0, 60).map(w => [w.word, Math.round(10 + w.count / maxCount * 40)]);
-                const colors = ['#7F77DD', '#1D9E75', '#378ADD', '#D4537E', '#BA7517', '#E24B4A'];
+                const colors = ['#c4621a', '#d4841e', '#1a7a5c', '#b83020', '#1a5a7a', '#8b3a4a'];
                 WordCloud(canvas, { list, gridSize: 8, weightFactor: 1, fontFamily: 'sans-serif', color: () => colors[Math.floor(Math.random() * colors.length)], rotateRatio: 0.3, backgroundColor: 'transparent', minSize: 10 });
             }
 
@@ -615,13 +622,13 @@
                 type: 'polarArea',
                 data: {
                     labels: ['AM — Morning ritual', 'PM — Evening debrief'],
-                    datasets: [{ data: [amPct, pmPct], backgroundColor: ['rgba(127,119,221,0.6)', 'rgba(29,158,117,0.6)'], borderColor: ['#7F77DD', '#1D9E75'], borderWidth: 1.5 }]
+                    datasets: [{ data: [amPct, pmPct], backgroundColor: ['rgba(196,98,26,0.6)', 'rgba(26,122,92,0.6)'], borderColor: ['#c4621a', '#1a7a5c'], borderWidth: 1.5 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.07)' } } } }
             });
             document.getElementById('polar-legend').innerHTML = [
-                { l: 'AM — Morning ritual', c: '#7F77DD', v: amPct + '%' },
-                { l: 'PM — Evening debrief', c: '#1D9E75', v: pmPct + '%' }
+                { l: 'AM — Morning ritual', c: '#c4621a', v: amPct + '%' },
+                { l: 'PM — Evening debrief', c: '#1a7a5c', v: pmPct + '%' }
             ].map(x => `<div class="legend-item"><div class="legend-dot" style="background:${x.c}"></div>${x.l}: ${x.v}</div>`).join('');
 
             // Line: word count over time
@@ -630,7 +637,7 @@
             const lineCounts = data.wordsByDate.map(d => d.count);
             lineChart = new Chart(document.getElementById('lineChart'), {
                 type: 'line',
-                data: { labels: lineLabels, datasets: [{ label: 'Words', data: lineCounts, borderColor: '#7F77DD', backgroundColor: 'rgba(127,119,221,0.08)', borderWidth: 1.5, pointRadius: 3, pointBackgroundColor: '#7F77DD', tension: 0.3, fill: true }] },
+                data: { labels: lineLabels, datasets: [{ label: 'Words', data: lineCounts, borderColor: '#c4621a', backgroundColor: 'rgba(196,98,26,0.08)', borderWidth: 1.5, pointRadius: 3, pointBackgroundColor: '#c4621a', tension: 0.3, fill: true }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
             });
 
@@ -638,7 +645,7 @@
             if (bubbleChart) bubbleChart.destroy();
             const top = data.wordFrequency.slice(0, 20);
             const maxC = top[0]?.count || 1;
-            const cols = ['#7F77DD', '#1D9E75', '#378ADD', '#E24B4A', '#BA7517', '#D4537E'];
+            const cols = ['#c4621a', '#1a7a5c', '#d4841e', '#b83020', '#1a5a7a', '#8b3a4a'];
             const bubbleDatasets = top.map((w, i) => ({
                 label: w.word,
                 data: [{ x: (i % 5) * 20 + 10 + (Math.random() - 0.5) * 6, y: Math.floor(i / 5) * 22 + 15 + (Math.random() - 0.5) * 4, r: Math.max(6, Math.round(w.count / maxC * 28)) }],
