@@ -11,14 +11,14 @@ const JOURNALING_DB_ID = process.env.NOTION_JOURNALING_DB_ID;
 // Maps journaling words to life areas. Used for algorithmic insight generation.
 
 const THEME_KEYWORDS = {
-    'spiritual clarity': ['god', 'lord', 'prayer', 'faith', 'worship', 'surrender', 'kingdom', 'divine', 'spirit', 'rhema', 'biblical', 'grace', 'holy', 'peace', 'church', 'scripture', 'verse', 'mandate', 'obedience'],
-    'strategic thinking': ['strategy', 'market', 'vision', 'opportunity', 'trend', 'competitive', 'industry', 'signal', 'pivot', 'insight', 'growth', 'position', 'sector', 'analysis', 'direction'],
-    'execution discipline': ['execute', 'build', 'deliver', 'ship', 'complete', 'finish', 'task', 'catalyst', 'frog', 'action', 'output', 'done', 'deploy', 'launch', 'move', 'sprint', 'deadline'],
-    'leadership depth': ['lead', 'team', 'align', 'mentor', 'cover', 'people', 'alliance', 'network', 'connect', 'seed', 'invest', 'relationship', 'culture', 'influence', 'trust', 'partner'],
-    'mental clarity': ['clarity', 'focus', 'discipline', 'energy', 'mind', 'mindset', 'resilience', 'balance', 'intention', 'reflect', 'learn', 'think', 'awareness', 'decision', 'control'],
-    'financial focus': ['revenue', 'profit', 'cash', 'invest', 'fund', 'money', 'financial', 'burn', 'cost', 'income', 'budget', 'equity', 'runway', 'valuation', 'clients'],
-    'physical health': ['gym', 'exercise', 'bike', 'sleep', 'body', 'rest', 'energy', 'health', 'cold', 'shower', 'recover', 'train', 'physical', 'strength', 'endurance'],
-    'creative expression': ['music', 'piano', 'guitar', 'jazz', 'art', 'create', 'improvise', 'compose', 'melody', 'practice', 'rhythm', 'creative', 'expression'],
+    'spiritual clarity': ['god', 'lord', 'prayer', 'faith', 'worship', 'surrender', 'grace', 'holy', 'peace', 'promise', 'repentance', 'christ', 'strength', 'scripture', 'trust', 'believe'],
+    'strategic thinking': ['strategy', 'market', 'vision', 'opportunity', 'trend', 'competitive', 'industry', 'signal', 'pivot', 'growth', 'analysis', 'direction', 'goals', 'objectives'],
+    'execution discipline': ['execute', 'build', 'deliver', 'complete', 'finish', 'task', 'frog', 'action', 'output', 'done', 'launch', 'move', 'priority', 'distraction', 'win'],
+    'leadership depth': ['lead', 'team', 'align', 'mentor', 'people', 'network', 'connect', 'invest', 'relationship', 'culture', 'influence', 'partner', 'alliance', 'seed'],
+    'mental clarity': ['clarity', 'focus', 'discipline', 'mindset', 'resilience', 'balance', 'intention', 'reflect', 'awareness', 'decision', 'control', 'better', 'progress'],
+    'financial focus': ['revenue', 'profit', 'cash', 'invest', 'fund', 'money', 'financial', 'cost', 'income', 'budget', 'equity', 'runway', 'valuation', 'clients'],
+    'physical health': ['gym', 'exercise', 'bike', 'sleep', 'body', 'rest', 'health', 'cold', 'shower', 'recover', 'train', 'physical', 'strength', 'endurance'],
+    'creative expression': ['music', 'piano', 'guitar', 'jazz', 'art', 'create', 'improvise', 'compose', 'melody', 'practice', 'rhythm', 'creative'],
 };
 
 // ─── ALGORITHMIC INSIGHT ─────────────────────────────────────────────────────
@@ -176,49 +176,7 @@ function mergeFreq(a, b) {
     return result;
 }
 
-// ─── ANTHROPIC INSIGHT ───────────────────────────────────────────────────────
 
-async function generateInsight(topWords, trend, amPct, pmPct, totalEntries) {
-    if (!ANTHROPIC_API_KEY) return null;
-
-    const wordList = topWords.slice(0, 20).map(w => `${w.word} (${w.count}x)`).join(', ');
-    const trendStr = trend > 0 ? 'increasing' : trend < 0 ? 'decreasing' : 'stable';
-    const dominant = amPct >= pmPct ? 'morning' : 'evening';
-
-    const prompt = `You are analyzing a founder's private journaling data. Based on the data below, write ONE concise insight sentence in this exact format:
-"This month you're strengthening your [X] but need to give more attention to [Y]."
-
-Where X and Y should be specific themes derived from the data (e.g., "spiritual clarity", "execution discipline", "strategic thinking", "market awareness", "relationship building", "rest and recovery", etc.)
-
-Data:
-- Most frequent words in journals: ${wordList}
-- Writing volume trend: ${trendStr}
-- ${amPct}% of words written in morning sections (AM), ${pmPct}% in evening sections (PM)
-- ${totalEntries} total journal entries
-
-Respond with ONLY the sentence, nothing else.`;
-
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-            'x-api-key': ANTHROPIC_API_KEY,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 100,
-            messages: [{ role: 'user', content: prompt }],
-        }),
-    });
-
-    if (!res.ok) {
-        console.warn('Anthropic API error:', await res.text());
-        return null;
-    }
-    const data = await res.json();
-    return data.content?.[0]?.text?.trim() || null;
-}
 
 // ─── MAIN ────────────────────────────────────────────────────────────────────
 
@@ -272,10 +230,8 @@ Respond with ONLY the sentence, nothing else.`;
         const freq = wordFrequency(text);
         globalFreq = mergeFreq(globalFreq, freq);
 
-        // AM / PM split
-        const amMarker = 'AM';
-        const pmMarker = 'PM';
-        const pmIdx = text.search(/PM\s*[—\-]/);
+        // AM / PM split — detect by Evening section heading
+        const pmIdx = text.search(/Evening|🌙/i);
         const amText = pmIdx > 0 ? text.slice(0, pmIdx) : text;
         const pmText = pmIdx > 0 ? text.slice(pmIdx) : '';
         amFreq = mergeFreq(amFreq, wordFrequency(amText));
