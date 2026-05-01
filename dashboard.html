@@ -425,7 +425,7 @@
 
             <!-- AI Insight -->
             <div class="insight-card">
-                <div class="insight-label">✦ AI Insight</div>
+                <div class="insight-label">✦ Insight</div>
                 <div class="insight-text" id="ai-insight">Analyzing your journals…</div>
             </div>
 
@@ -464,7 +464,7 @@
 
                 <!-- Polar Area: AM vs PM sections -->
                 <div class="chart-card">
-                    <div class="chart-title">Section balance — AM vs PM depth</div>
+                    <div class="chart-title">Writing balance — morning vs evening</div>
                     <div class="chart-wrap tall"><canvas id="polarChart" role="img"
                             aria-label="Polar area chart of AM vs PM writing balance"></canvas></div>
                     <div class="legend" id="polar-legend"></div>
@@ -621,14 +621,14 @@
             polarChart = new Chart(document.getElementById('polarChart'), {
                 type: 'polarArea',
                 data: {
-                    labels: ['AM — Morning ritual', 'PM — Evening debrief'],
+                    labels: ['AM — Morning', 'PM — Evening'],
                     datasets: [{ data: [amPct, pmPct], backgroundColor: ['rgba(196,98,26,0.6)', 'rgba(26,122,92,0.6)'], borderColor: ['#c4621a', '#1a7a5c'], borderWidth: 1.5 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.07)' } } } }
             });
             document.getElementById('polar-legend').innerHTML = [
-                { l: 'AM — Morning ritual', c: '#c4621a', v: amPct + '%' },
-                { l: 'PM — Evening debrief', c: '#1a7a5c', v: pmPct + '%' }
+                { l: 'AM — Morning', c: '#c4621a', v: amPct + '%' },
+                { l: 'PM — Evening', c: '#1a7a5c', v: pmPct + '%' }
             ].map(x => `<div class="legend-item"><div class="legend-dot" style="background:${x.c}"></div>${x.l}: ${x.v}</div>`).join('');
 
             // Line: word count over time
