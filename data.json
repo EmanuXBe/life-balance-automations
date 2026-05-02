@@ -1,19 +1,19 @@
 {
-  "updatedAt": "2026-05-02T04:36:30.301Z",
+  "updatedAt": "2026-05-02T06:30:03.710Z",
   "daysLogged": 2,
   "perfectDays": 0,
   "streak": 2,
-  "avg7": 4,
+  "avg7": 6,
   "improvement": null,
   "scoreDist": [
     0,
     0,
     0,
+    0,
+    0,
     1,
     0,
     1,
-    0,
-    0,
     0,
     0,
     0
@@ -29,9 +29,9 @@
   "areaAvgs": [
     100,
     0,
-    25,
+    75,
     50,
-    50,
+    100,
     100
   ]
 }
