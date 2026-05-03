@@ -1,17 +1,17 @@
 {
-  "updatedAt": "2026-05-03T18:19:00.192Z",
-  "daysLogged": 3,
+  "updatedAt": "2026-05-03T19:16:40.965Z",
+  "daysLogged": 4,
   "perfectDays": 0,
   "tierCounts": {
     "S": 0,
     "A": 1,
-    "B": 1,
+    "B": 2,
     "C": 1
   },
   "streak": 0,
   "bestStreak": 0,
   "sDaysLast7": 0,
-  "avg7": 6.7,
+  "avg7": 6.5,
   "improvement": null,
   "scoreDist": [
     0,
@@ -20,7 +20,7 @@
     0,
     0,
     1,
-    0,
+    1,
     1,
     1,
     0,
@@ -35,11 +35,11 @@
     "Leadership"
   ],
   "areaAvgs": [
-    100,
-    17,
-    67,
-    67,
-    83,
+    75,
+    13,
+    75,
+    63,
+    88,
     100
   ],
   "areaTrends": [
@@ -53,7 +53,7 @@
   "habitRates": [
     {
       "prop": "⛪ Prayer — Full Surrender",
-      "rate": 100,
+      "rate": 75,
       "done": 3
     },
     {
@@ -63,43 +63,43 @@
     },
     {
       "prop": "🏋️ Training — Output Over Comfort",
-      "rate": 33,
+      "rate": 25,
       "done": 1
     },
     {
       "prop": "🚫 Sovereign Morning — Zero Inputs Before Outputs",
-      "rate": 33,
+      "rate": 25,
       "done": 1
     },
     {
       "prop": "📚 Reading — 1 Insight Captured",
-      "rate": 33,
-      "done": 1
+      "rate": 50,
+      "done": 2
     },
     {
       "prop": "💻 Deep Work — #1 Deliverable Advanced",
       "rate": 100,
-      "done": 3
+      "done": 4
     },
     {
       "prop": "🎯 Traction Move — Civora / Prediu",
-      "rate": 67,
-      "done": 2
+      "rate": 75,
+      "done": 3
     },
     {
       "prop": "🗓️ Tomorrow Locked — #1 Priority Clear",
       "rate": 100,
-      "done": 3
+      "done": 4
     },
     {
       "prop": "🤝 Relationship Capital — 1 Person Invested",
       "rate": 100,
-      "done": 3
+      "done": 4
     },
     {
       "prop": "✍️ Reflection — AM Intention + PM Review",
       "rate": 100,
-      "done": 3
+      "done": 4
     }
   ]
 }
