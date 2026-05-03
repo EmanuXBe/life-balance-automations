@@ -1,18 +1,9 @@
 // generate-coaching.js
-// Runs in GitHub Actions twice daily:
-//   4:30 AM Bogotá → AM coach  (cron: '30 9 * * *')
-//   9:30 PM Bogotá → PM coach  (cron: '30 2 * * *')
-//
-// PROVIDER: set via GitHub Secret COACHING_PROVIDER = "anthropic" or "gemini"
-// Default: anthropic
-//
-// ANTHROPIC: ANTHROPIC_API_KEY secret → claude-haiku (~$0.60/year for 2 calls/day)
-// GEMINI:    GEMINI_API_KEY secret    → gemini-1.5-flash (free tier: NEW project at aistudio.google.com)
+// Runs twice daily via GitHub Actions (generate-coaching.yml).
+// Uses Gemini 1.5 Flash — requires GEMINI_API_KEY secret.
 
 const fs = require('fs');
 
-const PROVIDER = (process.env.COACHING_PROVIDER || 'anthropic').toLowerCase();
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
 
 // ─── TIME (Bogotá = UTC-5, no DST) ───────────────────────────────────────────
@@ -22,8 +13,7 @@ function getBogotaHour() {
 }
 
 function getTodayBogota() {
-  const bogota = new Date(Date.now() - 5 * 60 * 60 * 1000);
-  return bogota.toISOString().slice(0, 10);
+  return new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
@@ -56,29 +46,10 @@ function getJournalExcerpt(journalingData, forDate = null) {
   return entries[0]?.excerpt?.trim() || null;
 }
 
-// ─── AI PROVIDERS ─────────────────────────────────────────────────────────────
-
-async function callAnthropic(prompt) {
-  if (!ANTHROPIC_KEY) throw new Error('Missing ANTHROPIC_API_KEY secret');
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 250,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-  if (!res.ok) throw new Error(`Anthropic error: ${await res.text()}`);
-  return (await res.json()).content[0]?.text?.trim() || '';
-}
+// ─── GEMINI ───────────────────────────────────────────────────────────────────
 
 async function callGemini(prompt) {
-  if (!GEMINI_KEY) throw new Error('Missing GEMINI_API_KEY secret');
+  if (!GEMINI_KEY) throw new Error('Missing GEMINI_API_KEY secret — add it in GitHub repo Settings → Secrets');
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
   const res = await fetch(url, {
     method: 'POST',
@@ -88,13 +59,8 @@ async function callGemini(prompt) {
       generationConfig: { maxOutputTokens: 250, temperature: 0.7 },
     }),
   });
-  if (!res.ok) throw new Error(`Gemini error: ${await res.text()}`);
+  if (!res.ok) throw new Error(`Gemini API error: ${await res.text()}`);
   return (await res.json()).candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-}
-
-async function callAI(prompt) {
-  console.log(`Using provider: ${PROVIDER}`);
-  return PROVIDER === 'gemini' ? callGemini(prompt) : callAnthropic(prompt);
 }
 
 // ─── PROMPTS ──────────────────────────────────────────────────────────────────
@@ -157,12 +123,12 @@ function buildPMPrompt(habits, journaling, todayDate) {
   }
 
   if (isAM && !coachAM) {
-    console.log('Generating AM coaching…');
-    coachAM = await callAI(buildAMPrompt(habits, journaling));
+    console.log('Generating AM coaching via Gemini 1.5 Flash...');
+    coachAM = await callGemini(buildAMPrompt(habits, journaling));
     console.log('AM Coach:', coachAM);
   } else if (!isAM && !coachPM) {
-    console.log('Generating PM coaching…');
-    coachPM = await callAI(buildPMPrompt(habits, journaling, todayDate));
+    console.log('Generating PM coaching via Gemini 1.5 Flash...');
+    coachPM = await callGemini(buildPMPrompt(habits, journaling, todayDate));
     console.log('PM Coach:', coachPM);
   } else {
     console.log('Coaching already generated for this session today — skipping.');
