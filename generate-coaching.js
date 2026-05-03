@@ -130,8 +130,9 @@ function buildPMPrompt(habits, journaling, todayDate) {
   const bogotaHour = getBogotaHour();
   const todayDate = getTodayBogota();
   const isAM = bogotaHour < 14;
+  const isManual = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
 
-  console.log(`Bogotá hour: ${bogotaHour} | Session: ${isAM ? 'AM' : 'PM'} | Date: ${todayDate}`);
+  console.log(`Bogotá hour: ${bogotaHour} | Session: ${isAM ? 'AM' : 'PM'} | Date: ${todayDate} | Manual: ${isManual}`);
 
   let coachAM = existing.coachAM ?? null;
   let coachPM = existing.coachPM ?? null;
@@ -141,7 +142,14 @@ function buildPMPrompt(habits, journaling, todayDate) {
     console.log('New day — resetting coaching.');
   }
 
-  if (isAM && !coachAM) {
+  if (isManual) {
+    // Manual run: always regenerate both sessions with fresh data
+    console.log('Manual run — regenerating both AM and PM...');
+    coachAM = await callGemini(buildAMPrompt(habits, journaling));
+    console.log('AM Coach:', coachAM);
+    coachPM = await callGemini(buildPMPrompt(habits, journaling, todayDate));
+    console.log('PM Coach:', coachPM);
+  } else if (isAM && !coachAM) {
     console.log('Generating AM coaching via Gemini 2.5 Flash...');
     coachAM = await callGemini(buildAMPrompt(habits, journaling));
     console.log('AM Coach:', coachAM);

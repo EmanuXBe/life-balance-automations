@@ -1275,10 +1275,12 @@
             closePATModal();
         }
 
-        function setRefreshLabel(text) {
+        function setRefreshLabel(text, isError = false) {
             const btn = document.getElementById('refresh-btn');
             btn.textContent = text;
             btn.disabled = text !== '↻ Refresh';
+            const sub = document.getElementById('updated-at');
+            if (isError) sub.textContent = text;
         }
 
         async function ghDispatch(token, workflow) {
@@ -1290,7 +1292,11 @@
                     body: JSON.stringify({ ref: GITHUB_BRANCH }),
                 }
             );
-            if (!res.ok) throw new Error(`Failed to trigger ${workflow}: ${res.status}`);
+            if (!res.ok) {
+                const body = await res.json().catch(() => ({}));
+                const msg = body.message || res.status;
+                throw new Error(`GitHub API error (${workflow}): ${msg}`);
+            }
         }
 
         async function ghWaitComplete(token, workflow, since, timeoutMs = 150000) {
@@ -1350,8 +1356,9 @@
                 await ghWaitComplete(token, 'generate-coaching.yml', coachSince);
 
             } catch (e) {
-                console.warn('Sync error:', e.message);
-                // Fall through — still reload whatever is in the repo
+                console.error('Sync error:', e.message);
+                setRefreshLabel(`⚠ ${e.message}`, true);
+                await new Promise(r => setTimeout(r, 4000));
             } finally {
                 setRefreshLabel('↻ Refresh');
             }
