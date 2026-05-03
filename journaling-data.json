@@ -1,15 +1,27 @@
 {
-  "updatedAt": "2026-05-03T00:04:19.910Z",
+  "updatedAt": "2026-05-03T04:08:06.858Z",
   "totalEntries": 3,
-  "totalWords": 194,
-  "avgWordsPerEntry": 65,
+  "totalWords": 312,
+  "avgWordsPerEntry": 104,
   "wordFrequency": [
+    {
+      "word": "grateful",
+      "count": 4
+    },
     {
       "word": "review",
       "count": 3
     },
     {
       "word": "life",
+      "count": 3
+    },
+    {
+      "word": "didnt",
+      "count": 3
+    },
+    {
+      "word": "movil",
       "count": 3
     },
     {
@@ -33,11 +45,27 @@
       "count": 2
     },
     {
-      "word": "computación",
+      "word": "dont",
       "count": 2
     },
     {
-      "word": "movil",
+      "word": "let",
+      "count": 2
+    },
+    {
+      "word": "civora",
+      "count": 2
+    },
+    {
+      "word": "making",
+      "count": 2
+    },
+    {
+      "word": "page",
+      "count": 2
+    },
+    {
+      "word": "computación",
       "count": 2
     },
     {
@@ -46,6 +74,34 @@
     },
     {
       "word": "parcial",
+      "count": 2
+    },
+    {
+      "word": "lord",
+      "count": 2
+    },
+    {
+      "word": "friends",
+      "count": 2
+    },
+    {
+      "word": "hard",
+      "count": 2
+    },
+    {
+      "word": "complete",
+      "count": 2
+    },
+    {
+      "word": "went",
+      "count": 2
+    },
+    {
+      "word": "bad",
+      "count": 2
+    },
+    {
+      "word": "computation",
       "count": 2
     },
     {
@@ -117,10 +173,6 @@
       "count": 1
     },
     {
-      "word": "dont",
-      "count": 1
-    },
-    {
       "word": "actually",
       "count": 1
     },
@@ -169,10 +221,6 @@
       "count": 1
     },
     {
-      "word": "let",
-      "count": 1
-    },
-    {
       "word": "strength",
       "count": 1
     },
@@ -197,10 +245,6 @@
       "count": 1
     },
     {
-      "word": "civora",
-      "count": 1
-    },
-    {
       "word": "jean",
       "count": 1
     },
@@ -213,15 +257,7 @@
       "count": 1
     },
     {
-      "word": "making",
-      "count": 1
-    },
-    {
       "word": "notion",
-      "count": 1
-    },
-    {
-      "word": "page",
       "count": 1
     },
     {
@@ -269,10 +305,6 @@
       "count": 1
     },
     {
-      "word": "didnt",
-      "count": 1
-    },
-    {
       "word": "enough",
       "count": 1
     },
@@ -297,75 +329,79 @@
       "count": 1
     },
     {
-      "word": "lord",
+      "word": "mercy",
       "count": 1
     },
     {
-      "word": "changing",
+      "word": "presence",
       "count": 1
     },
     {
-      "word": "mind",
+      "word": "family",
       "count": 1
     },
     {
-      "word": "getting",
+      "word": "finish",
       "count": 1
     },
     {
-      "word": "closer",
+      "word": "fast",
       "count": 1
     },
     {
-      "word": "rest",
+      "word": "dopamine",
       "count": 1
     },
     {
-      "word": "grateful",
+      "word": "bought",
       "count": 1
     },
     {
-      "word": "opportunities",
+      "word": "iphone",
       "count": 1
     },
     {
-      "word": "friends",
+      "word": "church",
       "count": 1
     },
     {
-      "word": "pray",
+      "word": "met",
       "count": 1
     },
     {
-      "word": "resume",
+      "word": "partners",
       "count": 1
     },
     {
-      "word": "spiritual",
+      "word": "forward",
       "count": 1
     },
     {
-      "word": "scrolling",
+      "word": "trusted",
       "count": 1
     },
     {
-      "word": "social",
+      "word": "deployed",
       "count": 1
     },
     {
-      "word": "media",
+      "word": "landing",
       "count": 1
     },
     {
-      "word": "bad",
+      "word": "lust",
       "count": 1
     },
     {
-      "word": "planning",
+      "word": "habits",
       "count": 1
     },
     {
-      "word": "computation",
+      "word": "discipline",
+      "count": 1
+    },
+    {
+      "word": "constancy",
       "count": 1
     }
   ],
@@ -375,8 +411,8 @@
       "count": 143
     },
     {
-      "date": null,
-      "count": 0
+      "date": "2026-05-02",
+      "count": 118
     },
     {
       "date": null,
@@ -389,8 +425,8 @@
       "count": 143
     },
     {
-      "date": null,
-      "count": 0
+      "date": "2026-05-02",
+      "count": 118
     },
     {
       "date": null,
@@ -399,12 +435,12 @@
   ],
   "sectionBalance": {
     "am": {
-      "words": 104,
-      "pct": 100
+      "words": 159,
+      "pct": 99
     },
     "pm": {
-      "words": 0,
-      "pct": 0
+      "words": 1,
+      "pct": 1
     }
   },
   "aiInsight": "This month you're strengthening your mental clarity but need to give more attention to your strategic thinking. — your mornings are strong but evenings need more reflection."
