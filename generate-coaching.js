@@ -58,7 +58,7 @@ async function callGemini(prompt) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 120, temperature: 0.7 },
+      generationConfig: { maxOutputTokens: 350, temperature: 0.7 },
     }),
   });
   if (!res.ok) throw new Error(`Gemini API error: ${await res.text()}`);
@@ -78,11 +78,12 @@ function buildAMPrompt(habits, journaling) {
     `You are a high-performance coach for a faith-driven founder building at an elite level. You understand how physical, spiritual, and execution disciplines compound or collapse together.`,
     ``,
     `STRICT OUTPUT RULES:`,
-    `- HARD LIMIT: your entire response must be under 180 characters — count carefully, never exceed it`,
-    `- Write ONE complete sentence that delivers the full insight — no trailing off, no cutoffs`,
-    `- NEVER restate numbers or percentages — the founder already sees their dashboard`,
-    `- Use the journal entries to find WHY habits are failing — speak to their real situation, not generic advice`,
-    `- Name the root cause and one concrete action. No greeting. No softening.`,
+    `- Write exactly 3 sentences, at least 90 words total`,
+    `- Sentence 1: diagnose what's really breaking down and WHY — use the journal to speak to the founder's actual life, not generic patterns`,
+    `- Sentence 2: name the root cause and why it matters for their trajectory`,
+    `- Sentence 3: one sharp, concrete CTA — a specific behavior to execute today, not a category`,
+    `- NEVER restate numbers or percentages — the founder sees the dashboard`,
+    `- No greeting. No softening. No filler words.`,
     ``,
     `HABITS — 7-day completion (sorted worst to best):`,
     habitLines,
@@ -90,7 +91,7 @@ function buildAMPrompt(habits, journaling) {
     `Overall: ${habits.avg7}/10 avg | ${habits.streak} perfect days streak`,
     journalContext ? `\nJOURNAL (use this to understand the WHY):\n${journalContext}` : '',
     ``,
-    `One complete sentence, under 180 characters, that names the root cause and the single action to take today.`,
+    `Diagnose → root cause → CTA. 3 sentences, minimum 90 words.`,
   ].filter(Boolean).join('\n');
 }
 
@@ -105,11 +106,12 @@ function buildPMPrompt(habits, journaling, todayDate) {
     `You are a high-performance coach for a faith-driven founder building at an elite level. You understand how physical, spiritual, and execution disciplines compound or collapse together.`,
     ``,
     `STRICT OUTPUT RULES:`,
-    `- HARD LIMIT: your entire response must be under 180 characters — count carefully, never exceed it`,
-    `- Write ONE complete sentence that delivers the full insight — no trailing off, no cutoffs`,
-    `- NEVER restate numbers or percentages — the founder already sees their dashboard`,
-    `- Use the journal entries to find WHY habits are failing — speak to their real situation, not generic advice`,
-    `- Name what was won, what was lost, and the one intention for tomorrow. No greeting. No softening.`,
+    `- Write exactly 3 sentences, at least 90 words total`,
+    `- Sentence 1: name the real win of the day (if earned) or the real failure — use the journal to ground it in what actually happened`,
+    `- Sentence 2: diagnose the root cause of what was skipped and why it matters for tomorrow`,
+    `- Sentence 3: one sharp CTA — a specific behavior or decision to lock in tonight or first thing tomorrow`,
+    `- NEVER restate numbers or percentages — the founder sees the dashboard`,
+    `- No greeting. No softening. No filler words.`,
     ``,
     `HABITS — 7-day completion (sorted worst to best):`,
     habitLines,
@@ -117,7 +119,7 @@ function buildPMPrompt(habits, journaling, todayDate) {
     `Today: ${habits.avg7}/10 avg | S-days this week: ${habits.sDaysLast7 ?? 0}/7 | ${habits.streak} perfect days streak`,
     journalContext ? `\nJOURNAL (use this to understand the WHY):\n${journalContext}` : '',
     ``,
-    `One complete sentence, under 180 characters, that names today's real outcome and the single intention for tomorrow.`,
+    `Win/loss → root cause → CTA. 3 sentences, minimum 90 words.`,
   ].filter(Boolean).join('\n');
 }
 

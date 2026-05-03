@@ -1342,6 +1342,11 @@
 
         // Dispatches all workflows and waits for results — only called by the Refresh button.
         async function syncAll() {
+            // Inside Notion embed: localStorage is blocked — open dashboard in new tab instead
+            if (window.self !== window.top) {
+                window.open(window.location.href, '_blank');
+                return;
+            }
             const token = getGHToken();
             if (!token) { await loadAll(); return; }
 
