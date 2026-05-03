@@ -1294,21 +1294,34 @@
             );
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
-                const msg = body.message || res.status;
-                throw new Error(`GitHub API error (${workflow}): ${msg}`);
+                throw new Error(`GitHub API error (${workflow}): ${body.message || res.status}`);
             }
         }
 
-        async function ghWaitComplete(token, workflow, since, timeoutMs = 150000) {
+        async function ghLatestRunId(token, workflow) {
+            const res = await fetch(
+                `https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${workflow}/runs?per_page=1`,
+                { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } }
+            );
+            if (!res.ok) return 0;
+            const { workflow_runs } = await res.json();
+            return workflow_runs?.[0]?.id ?? 0;
+        }
+
+        async function ghWaitComplete(token, workflow, prevId, timeoutMs = 180000) {
             const deadline = Date.now() + timeoutMs;
             while (Date.now() < deadline) {
-                await new Promise(r => setTimeout(r, 7000));
+                await new Promise(r => setTimeout(r, 6000));
                 const res = await fetch(
-                    `https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${workflow}/runs?per_page=5`,
+                    `https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${workflow}/runs?per_page=3`,
                     { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } }
                 );
+                if (!res.ok) {
+                    const body = await res.json().catch(() => ({}));
+                    throw new Error(`GitHub API error (${workflow}): ${body.message || res.status}`);
+                }
                 const { workflow_runs } = await res.json();
-                const run = workflow_runs?.find(r => new Date(r.created_at) >= since && r.status === 'completed');
+                const run = workflow_runs?.find(r => r.id > prevId && r.status === 'completed');
                 if (run) {
                     if (run.conclusion !== 'success') throw new Error(`${workflow} failed: ${run.conclusion}`);
                     return;
@@ -1326,34 +1339,40 @@
             const token = getGHToken();
 
             if (!token) {
-                // No token — just reload cached JSONs
                 await Promise.all([loadVerse(), loadCoaching(), loadHabits()]);
                 if (document.querySelector('.tab.active')?.textContent.includes('Journal')) loadJournaling();
                 return;
             }
 
             try {
-                const since = new Date(Date.now() - 4000);
-
-                // Step 1: trigger data + journaling in parallel
+                // Snapshot current run IDs before dispatching
                 setRefreshLabel('Triggering sync…');
+                const [prevNotion, prevJournal, prevVerse] = await Promise.all([
+                    ghLatestRunId(token, 'fetch-notion-data.yml'),
+                    ghLatestRunId(token, 'fetch-journaling-data.yml'),
+                    ghLatestRunId(token, 'daily-updates.yml'),
+                ]);
+
+                // Step 1: dispatch all data workflows in parallel
                 await Promise.all([
                     ghDispatch(token, 'fetch-notion-data.yml'),
                     ghDispatch(token, 'fetch-journaling-data.yml'),
+                    ghDispatch(token, 'daily-updates.yml'),
                 ]);
 
-                // Step 2: wait for both to complete
+                // Step 2: wait for all three to complete
                 setRefreshLabel('Syncing Notion…');
                 await Promise.all([
-                    ghWaitComplete(token, 'fetch-notion-data.yml', since),
-                    ghWaitComplete(token, 'fetch-journaling-data.yml', since),
+                    ghWaitComplete(token, 'fetch-notion-data.yml', prevNotion),
+                    ghWaitComplete(token, 'fetch-journaling-data.yml', prevJournal),
+                    ghWaitComplete(token, 'daily-updates.yml', prevVerse),
                 ]);
 
-                // Step 3: trigger coaching with fresh data
+                // Step 3: snapshot + dispatch coaching with fresh data
+                const prevCoach = await ghLatestRunId(token, 'generate-coaching.yml');
                 setRefreshLabel('Generating coaching…');
-                const coachSince = new Date(Date.now() - 2000);
                 await ghDispatch(token, 'generate-coaching.yml');
-                await ghWaitComplete(token, 'generate-coaching.yml', coachSince);
+                await ghWaitComplete(token, 'generate-coaching.yml', prevCoach);
 
             } catch (e) {
                 console.error('Sync error:', e.message);
@@ -1363,7 +1382,7 @@
                 setRefreshLabel('↻ Refresh');
             }
 
-            // Step 4: reload all data (fresh or fallback)
+            // Step 4: reload all fresh data
             await Promise.all([loadVerse(), loadCoaching(), loadHabits()]);
             if (document.querySelector('.tab.active')?.textContent.includes('Journal')) loadJournaling();
         }
