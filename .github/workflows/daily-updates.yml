@@ -1,0 +1,39 @@
+name: Daily Updates — Verse & Quote
+
+on:
+  schedule:
+    - cron: '0 9 * * *'   # 4:00 AM Bogotá (UTC-5)
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Update Daily Quote (Notion)
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_PAGE_ID: ${{ secrets.NOTION_PAGE_ID }}
+        run: node update-quote.js
+
+      - name: Update Verse of the Day (Notion + verse.json)
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_PAGE_ID: ${{ secrets.NOTION_PAGE_ID }}
+        run: node update-verse.js
+
+      - name: Commit verse.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add verse.json
+          git diff --cached --quiet || git commit -m "chore: update verse of the day [skip ci]"
+          git push
