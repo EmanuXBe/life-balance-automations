@@ -1,6 +1,6 @@
 // generate-coaching.js
 // Runs twice daily via GitHub Actions (generate-coaching.yml).
-// Uses Gemini 1.5 Flash — requires GEMINI_API_KEY secret.
+// Uses Gemini 2.5 Flash — requires GEMINI_API_KEY secret.
 
 const fs = require('fs');
 
@@ -50,7 +50,7 @@ function getJournalExcerpt(journalingData, forDate = null) {
 
 async function callGemini(prompt) {
   if (!GEMINI_KEY) throw new Error('Missing GEMINI_API_KEY secret — add it in GitHub repo Settings → Secrets');
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -123,11 +123,11 @@ function buildPMPrompt(habits, journaling, todayDate) {
   }
 
   if (isAM && !coachAM) {
-    console.log('Generating AM coaching via Gemini 1.5 Flash...');
+    console.log('Generating AM coaching via Gemini 2.5 Flash...');
     coachAM = await callGemini(buildAMPrompt(habits, journaling));
     console.log('AM Coach:', coachAM);
   } else if (!isAM && !coachPM) {
-    console.log('Generating PM coaching via Gemini 1.5 Flash...');
+    console.log('Generating PM coaching via Gemini 2.5 Flash...');
     coachPM = await callGemini(buildPMPrompt(habits, journaling, todayDate));
     console.log('PM Coach:', coachPM);
   } else {
