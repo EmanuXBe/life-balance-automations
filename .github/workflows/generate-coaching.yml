@@ -21,9 +21,7 @@ jobs:
 
       - name: Generate coaching advice
         env:
-          COACHING_PROVIDER: ${{ secrets.COACHING_PROVIDER }}   # "anthropic" or "gemini" — defaults to anthropic if not set
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GEMINI_API_KEY:    ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node generate-coaching.js
 
       - name: Commit coaching.json
