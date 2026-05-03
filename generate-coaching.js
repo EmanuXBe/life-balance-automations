@@ -23,27 +23,29 @@ function readJSON(path, fallback = null) {
   catch { return fallback; }
 }
 
-function getWeakestArea(areaLabels, areaAvgs, areaTrends) {
-  return (areaLabels || [])
-    .map((label, i) => ({
-      label,
-      avg: areaAvgs?.[i] ?? 0,
-      trend: areaTrends?.[i] ?? 0,
-      score: (areaAvgs?.[i] ?? 0) + (areaTrends?.[i] ?? 0) * 0.5,
-    }))
-    .sort((a, b) => a.score - b.score)[0];
-}
-
-function getWeakestHabit(habitRates) {
-  if (!habitRates?.length) return null;
-  return [...habitRates].sort((a, b) => a.rate - b.rate)[0];
-}
-
-function getJournalExcerpt(journalingData, forDate = null) {
+function buildJournalContext(journalingData, todayDate = null) {
   const entries = journalingData?.recentEntries;
   if (!entries?.length) return null;
-  if (forDate) return entries.find(e => e.date === forDate)?.excerpt?.trim() || null;
-  return entries[0]?.excerpt?.trim() || null;
+
+  const lines = [];
+
+  const relevant = todayDate
+    ? [entries.find(e => e.date === todayDate), ...entries.filter(e => e.date !== todayDate)].filter(Boolean)
+    : entries;
+
+  for (const e of relevant.slice(0, 3)) {
+    if (e.excerpt?.trim()) {
+      lines.push(`[${e.date}]: "${e.excerpt.trim().substring(0, 300)}"`);
+    }
+  }
+
+  const am = journalingData?.sectionBalance?.am?.pct;
+  const pm = journalingData?.sectionBalance?.pm?.pct;
+  if (am !== undefined && pm !== undefined) {
+    lines.push(`Journal balance: ${am}% morning entries / ${pm}% evening entries`);
+  }
+
+  return lines.length ? lines.join('\n') : null;
 }
 
 // ─── GEMINI ───────────────────────────────────────────────────────────────────
@@ -66,38 +68,55 @@ async function callGemini(prompt) {
 // ─── PROMPTS ──────────────────────────────────────────────────────────────────
 
 function buildAMPrompt(habits, journaling) {
-  const weakArea = getWeakestArea(habits.areaLabels, habits.areaAvgs, habits.areaTrends);
-  const weakHabit = getWeakestHabit(habits.habitRates);
-  const excerpt = getJournalExcerpt(journaling);
+  const journalContext = buildJournalContext(journaling);
+  const habitLines = (habits.habitRates || [])
+    .sort((a, b) => a.rate - b.rate)
+    .map(h => `  ${h.prop}: ${h.rate}%`)
+    .join('\n');
 
   return [
-    `You are a direct, ruthless performance coach for an elite founder. No fluff. No greetings. 2-3 sharp sentences only.`,
+    `You are a high-performance coach for a faith-driven founder building at an elite level. You understand how physical, spiritual, and execution disciplines compound or collapse together.`,
     ``,
-    `YESTERDAY'S PERFORMANCE:`,
-    `- 7-day avg: ${habits.avg7}/10 | Current streak: ${habits.streak} perfect days`,
-    `- Weakest area: ${weakArea?.label} at ${weakArea?.avg}% (trend: ${weakArea?.trend >= 0 ? '+' : ''}${weakArea?.trend}%)`,
-    weakHabit ? `- Most skipped habit: "${weakHabit.prop.replace(/^[^\w]+/, '')}" (${weakHabit.rate}% completion)` : '',
-    excerpt ? `\nYESTERDAY'S JOURNAL:\n"${excerpt.substring(0, 400)}"` : '',
+    `STRICT OUTPUT RULES:`,
+    `- NEVER restate numbers or percentages — the founder already sees their dashboard`,
+    `- Cross-reference the journal entries with the habit failures: what the founder WROTE reveals WHY the habits are breaking down — use that to give coaching that speaks to their real life, not generic advice`,
+    `- Find the ROOT CAUSE or PATTERN connecting the journal and the habit data`,
+    `- Give exactly ONE concrete action for today — a specific behavior, not a category`,
+    `- 2-3 sentences max. No greeting. No softening. No generic advice.`,
     ``,
-    `Name the exact gap. Set a clear intention. Challenge the founder to close it today. Be specific to the data.`,
+    `HABITS — 7-day completion (sorted worst to best):`,
+    habitLines,
+    ``,
+    `Overall: ${habits.avg7}/10 avg | ${habits.streak} perfect days streak`,
+    journalContext ? `\nJOURNAL (use this to understand the WHY):\n${journalContext}` : '',
+    ``,
+    `What does the journal reveal about why these habits are breaking down? Give one action that fixes the root cause today.`,
   ].filter(Boolean).join('\n');
 }
 
 function buildPMPrompt(habits, journaling, todayDate) {
-  const weakArea = getWeakestArea(habits.areaLabels, habits.areaAvgs, habits.areaTrends);
-  const todayExcerpt = getJournalExcerpt(journaling, todayDate);
-  const recentExcerpt = getJournalExcerpt(journaling);
+  const journalContext = buildJournalContext(journaling, todayDate);
+  const habitLines = (habits.habitRates || [])
+    .sort((a, b) => a.rate - b.rate)
+    .map(h => `  ${h.prop}: ${h.rate}%`)
+    .join('\n');
 
   return [
-    `You are a direct, ruthless performance coach for an elite founder. No fluff. No greetings. 2-3 sharp sentences only.`,
+    `You are a high-performance coach for a faith-driven founder building at an elite level. You understand how physical, spiritual, and execution disciplines compound or collapse together.`,
     ``,
-    `TODAY'S PERFORMANCE:`,
-    `- 7-day avg: ${habits.avg7}/10 | Streak: ${habits.streak} perfect days`,
-    `- Weakest area: ${weakArea?.label} at ${weakArea?.avg}% (trend: ${weakArea?.trend >= 0 ? '+' : ''}${weakArea?.trend}%)`,
-    `- S-days this week: ${habits.sDaysLast7 ?? 0}/7`,
-    (todayExcerpt || recentExcerpt) ? `\nTODAY'S JOURNAL:\n"${(todayExcerpt || recentExcerpt).substring(0, 400)}"` : '',
+    `STRICT OUTPUT RULES:`,
+    `- NEVER restate numbers or percentages — the founder already sees their dashboard`,
+    `- Cross-reference the journal entries with the habit failures: what the founder WROTE reveals WHY the habits are breaking down — use that to give coaching that speaks to their real life, not generic advice`,
+    `- Name the real win (if earned), diagnose the root cause of what was skipped, give ONE intention for tomorrow`,
+    `- 2-3 sentences max. No greeting. No softening. No generic advice.`,
     ``,
-    `Honest evening debrief: acknowledge what was won, name what was lost, give the single most important intention for tomorrow.`,
+    `HABITS — 7-day completion (sorted worst to best):`,
+    habitLines,
+    ``,
+    `Today: ${habits.avg7}/10 avg | S-days this week: ${habits.sDaysLast7 ?? 0}/7 | ${habits.streak} perfect days streak`,
+    journalContext ? `\nJOURNAL (use this to understand the WHY):\n${journalContext}` : '',
+    ``,
+    `What does the journal reveal about today? Name the real win, the real loss, and the one intention for tomorrow.`,
   ].filter(Boolean).join('\n');
 }
 
