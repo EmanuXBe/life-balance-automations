@@ -58,7 +58,7 @@ async function callGemini(prompt) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 500, temperature: 0.7 },
+      generationConfig: { maxOutputTokens: 120, temperature: 0.7 },
     }),
   });
   if (!res.ok) throw new Error(`Gemini API error: ${await res.text()}`);
@@ -78,11 +78,11 @@ function buildAMPrompt(habits, journaling) {
     `You are a high-performance coach for a faith-driven founder building at an elite level. You understand how physical, spiritual, and execution disciplines compound or collapse together.`,
     ``,
     `STRICT OUTPUT RULES:`,
+    `- HARD LIMIT: your entire response must be under 180 characters — count carefully, never exceed it`,
+    `- Write ONE complete sentence that delivers the full insight — no trailing off, no cutoffs`,
     `- NEVER restate numbers or percentages — the founder already sees their dashboard`,
-    `- Cross-reference the journal entries with the habit failures: what the founder WROTE reveals WHY the habits are breaking down — use that to give coaching that speaks to their real life, not generic advice`,
-    `- Find the ROOT CAUSE or PATTERN connecting the journal and the habit data`,
-    `- Give exactly ONE concrete action for today — a specific behavior, not a category`,
-    `- 2-3 sentences max. No greeting. No softening. No generic advice.`,
+    `- Use the journal entries to find WHY habits are failing — speak to their real situation, not generic advice`,
+    `- Name the root cause and one concrete action. No greeting. No softening.`,
     ``,
     `HABITS — 7-day completion (sorted worst to best):`,
     habitLines,
@@ -90,7 +90,7 @@ function buildAMPrompt(habits, journaling) {
     `Overall: ${habits.avg7}/10 avg | ${habits.streak} perfect days streak`,
     journalContext ? `\nJOURNAL (use this to understand the WHY):\n${journalContext}` : '',
     ``,
-    `What does the journal reveal about why these habits are breaking down? Give one action that fixes the root cause today.`,
+    `One complete sentence, under 180 characters, that names the root cause and the single action to take today.`,
   ].filter(Boolean).join('\n');
 }
 
@@ -105,10 +105,11 @@ function buildPMPrompt(habits, journaling, todayDate) {
     `You are a high-performance coach for a faith-driven founder building at an elite level. You understand how physical, spiritual, and execution disciplines compound or collapse together.`,
     ``,
     `STRICT OUTPUT RULES:`,
+    `- HARD LIMIT: your entire response must be under 180 characters — count carefully, never exceed it`,
+    `- Write ONE complete sentence that delivers the full insight — no trailing off, no cutoffs`,
     `- NEVER restate numbers or percentages — the founder already sees their dashboard`,
-    `- Cross-reference the journal entries with the habit failures: what the founder WROTE reveals WHY the habits are breaking down — use that to give coaching that speaks to their real life, not generic advice`,
-    `- Name the real win (if earned), diagnose the root cause of what was skipped, give ONE intention for tomorrow`,
-    `- 2-3 sentences max. No greeting. No softening. No generic advice.`,
+    `- Use the journal entries to find WHY habits are failing — speak to their real situation, not generic advice`,
+    `- Name what was won, what was lost, and the one intention for tomorrow. No greeting. No softening.`,
     ``,
     `HABITS — 7-day completion (sorted worst to best):`,
     habitLines,
@@ -116,7 +117,7 @@ function buildPMPrompt(habits, journaling, todayDate) {
     `Today: ${habits.avg7}/10 avg | S-days this week: ${habits.sDaysLast7 ?? 0}/7 | ${habits.streak} perfect days streak`,
     journalContext ? `\nJOURNAL (use this to understand the WHY):\n${journalContext}` : '',
     ``,
-    `What does the journal reveal about today? Name the real win, the real loss, and the one intention for tomorrow.`,
+    `One complete sentence, under 180 characters, that names today's real outcome and the single intention for tomorrow.`,
   ].filter(Boolean).join('\n');
 }
 
