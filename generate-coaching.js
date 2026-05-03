@@ -1,13 +1,13 @@
 // generate-coaching.js
 // Runs in GitHub Actions twice daily (4:30 AM Bogotá = AM coach, 9:30 PM Bogotá = PM coach).
-// Reads data.json (habits) + journaling-data.json (journal excerpts).
-// Calls Claude API to generate personalized founder coaching advice.
+// Uses Google Gemini API (free tier available at ai.google.dev).
+// Secret needed: GEMINI_API_KEY
 // Writes coaching.json for the GitHub Pages dashboard.
 
 const fs = require('fs');
 
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const MODEL = 'claude-haiku-4-5-20251001';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const MODEL = 'gemini-2.0-flash'; // fast + free tier available
 
 // ─── TIME CONTEXT (Bogotá = UTC-5, no DST) ───────────────────────────────────
 
@@ -29,20 +29,18 @@ function readJSON(path, fallback = null) {
 }
 
 function getWeakestArea(areaLabels, areaAvgs, areaTrends) {
-  // Score = avg + trend weight. Lower = more problematic.
-  const scored = areaLabels.map((label, i) => ({
+  const scored = (areaLabels || []).map((label, i) => ({
     label,
-    avg: areaAvgs[i] ?? 0,
+    avg: areaAvgs?.[i] ?? 0,
     trend: areaTrends?.[i] ?? 0,
-    score: (areaAvgs[i] ?? 0) + (areaTrends?.[i] ?? 0) * 0.5,
+    score: (areaAvgs?.[i] ?? 0) + (areaTrends?.[i] ?? 0) * 0.5,
   }));
   return scored.sort((a, b) => a.score - b.score)[0];
 }
 
 function getWeakestHabit(habitRates) {
   if (!habitRates?.length) return null;
-  const sorted = [...habitRates].sort((a, b) => a.rate - b.rate);
-  return sorted[0];
+  return [...habitRates].sort((a, b) => a.rate - b.rate)[0];
 }
 
 function getJournalExcerpt(journalingData, forDate = null) {
@@ -52,28 +50,24 @@ function getJournalExcerpt(journalingData, forDate = null) {
     const entry = entries.find(e => e.date === forDate);
     return entry?.excerpt?.trim() || null;
   }
-  return entries[0]?.excerpt?.trim() || null; // most recent
+  return entries[0]?.excerpt?.trim() || null;
 }
 
-// ─── CLAUDE API CALL ─────────────────────────────────────────────────────────
+// ─── GEMINI API CALL ─────────────────────────────────────────────────────────
 
-async function callClaude(prompt) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+async function callGemini(prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+  const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'x-api-key': ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 250,
-      messages: [{ role: 'user', content: prompt }],
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 250, temperature: 0.7 },
     }),
   });
-  if (!res.ok) throw new Error(`Claude API error: ${await res.text()}`);
+  if (!res.ok) throw new Error(`Gemini API error: ${await res.text()}`);
   const data = await res.json();
-  return data.content[0]?.text?.trim() || '';
+  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
 }
 
 // ─── PROMPTS ──────────────────────────────────────────────────────────────────
@@ -81,7 +75,7 @@ async function callClaude(prompt) {
 function buildAMPrompt(habits, journaling) {
   const weakArea = getWeakestArea(habits.areaLabels, habits.areaAvgs, habits.areaTrends);
   const weakHabit = getWeakestHabit(habits.habitRates);
-  const excerpt = getJournalExcerpt(journaling); // most recent entry (yesterday)
+  const excerpt = getJournalExcerpt(journaling);
 
   const lines = [
     `You are a direct, ruthless performance coach for an elite founder. No fluff. No greetings. 2-3 sharp sentences only.`,
@@ -100,7 +94,7 @@ function buildAMPrompt(habits, journaling) {
 function buildPMPrompt(habits, journaling, todayDate) {
   const weakArea = getWeakestArea(habits.areaLabels, habits.areaAvgs, habits.areaTrends);
   const todayExcerpt = getJournalExcerpt(journaling, todayDate);
-  const recentExcerpt = getJournalExcerpt(journaling); // fallback to most recent
+  const recentExcerpt = getJournalExcerpt(journaling);
 
   const lines = [
     `You are a direct, ruthless performance coach for an elite founder. No fluff. No greetings. 2-3 sharp sentences only.`,
@@ -119,50 +113,44 @@ function buildPMPrompt(habits, journaling, todayDate) {
 // ─── MAIN ────────────────────────────────────────────────────────────────────
 
 (async () => {
-  if (!ANTHROPIC_API_KEY) throw new Error('Missing ANTHROPIC_API_KEY');
+  if (!GEMINI_API_KEY) throw new Error('Missing GEMINI_API_KEY — add it in GitHub Secrets');
 
-  const habits    = readJSON('data.json', {});
+  const habits = readJSON('data.json', {});
   const journaling = readJSON('journaling-data.json', {});
-  const existing  = readJSON('coaching.json', {});
+  const existing = readJSON('coaching.json', {});
 
   const bogotaHour = getBogotaHour();
-  const todayDate  = getTodayBogota();
-  const isAM = bogotaHour < 14; // Before 2PM Bogotá = morning/midday window
+  const todayDate = getTodayBogota();
+  const isAM = bogotaHour < 14;
 
   console.log(`Bogotá hour: ${bogotaHour} | Session: ${isAM ? 'AM' : 'PM'} | Date: ${todayDate}`);
 
   let coachAM = existing.coachAM ?? null;
   let coachPM = existing.coachPM ?? null;
-  const existingDate = existing.date;
 
-  // Reset daily at midnight Bogotá
-  if (existingDate !== todayDate) {
-    coachAM = null;
-    coachPM = null;
+  if (existing.date !== todayDate) {
+    coachAM = null; coachPM = null;
     console.log('New day — resetting coaching.');
   }
 
   if (isAM && !coachAM) {
-    console.log('Generating AM coaching...');
-    const prompt = buildAMPrompt(habits, journaling);
-    coachAM = await callClaude(prompt);
+    console.log('Generating AM coaching via Gemini...');
+    coachAM = await callGemini(buildAMPrompt(habits, journaling));
     console.log('AM Coach:', coachAM);
   } else if (!isAM && !coachPM) {
-    console.log('Generating PM coaching...');
-    const prompt = buildPMPrompt(habits, journaling, todayDate);
-    coachPM = await callClaude(prompt);
+    console.log('Generating PM coaching via Gemini...');
+    coachPM = await callGemini(buildPMPrompt(habits, journaling, todayDate));
     console.log('PM Coach:', coachPM);
   } else {
-    console.log('Coaching already generated for this session today, skipping API call.');
+    console.log('Coaching already generated for this session today, skipping.');
   }
 
-  const output = {
+  fs.writeFileSync('coaching.json', JSON.stringify({
     updatedAt: new Date().toISOString(),
     date: todayDate,
     coachAM,
     coachPM,
-  };
+  }, null, 2));
 
-  fs.writeFileSync('coaching.json', JSON.stringify(output, null, 2));
   console.log('✅ coaching.json written.');
 })();
