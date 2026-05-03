@@ -58,11 +58,16 @@ async function callGemini(prompt) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 350, temperature: 0.7 },
+      generationConfig: {
+        maxOutputTokens: 350,
+        temperature: 0.7,
+        thinkingConfig: { thinkingBudget: 0 },
+      },
     }),
   });
   if (!res.ok) throw new Error(`Gemini API error: ${await res.text()}`);
-  return (await res.json()).candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+  const parts = (await res.json()).candidates?.[0]?.content?.parts || [];
+  return parts.filter(p => !p.thought).map(p => p.text).join('').trim();
 }
 
 // ─── PROMPTS ──────────────────────────────────────────────────────────────────
