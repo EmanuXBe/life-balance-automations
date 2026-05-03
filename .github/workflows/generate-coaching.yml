@@ -1,0 +1,33 @@
+name: Generate AI Coaching — Dashboard
+
+on:
+  schedule:
+    - cron: '30 9 * * *'   # 4:30 AM Bogotá — AM coach (before the day starts)
+    - cron: '30 2 * * *'   # 9:30 PM Bogotá — PM coach (end-of-day review)
+  workflow_dispatch:
+
+jobs:
+  coaching:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Generate coaching advice
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node generate-coaching.js
+
+      - name: Commit coaching.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add coaching.json
+          git diff --cached --quiet || git commit -m "chore: update coaching advice [skip ci]"
+          git push

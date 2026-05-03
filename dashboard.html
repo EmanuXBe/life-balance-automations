@@ -23,8 +23,6 @@
             --pink: #8b3a4a;
             --radius: 10px;
             --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-
-            /* Tier colors */
             --tier-s: #c4621a;
             --tier-a: #1a7a5c;
             --tier-b: #d4841e;
@@ -45,13 +43,152 @@
             padding: 20px;
         }
 
-        /* TABS */
+        /* ── VERSE BANNER ───────────────────────────────────────────────── */
+        .verse-banner {
+            background: linear-gradient(135deg, #0d1320 0%, #0a1018 100%);
+            border: 1px solid rgba(26, 90, 122, 0.35);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 14px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .verse-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .verse-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .verse-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: rgba(26, 90, 122, 0.8);
+            margin-bottom: 5px;
+        }
+
+        .verse-text {
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .verse-reference {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .verse-side {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+            align-items: flex-end;
+        }
+
+        .plan-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: transparent;
+            border: 1px solid rgba(26, 90, 122, 0.4);
+            color: rgba(26, 90, 122, 0.9);
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 10px;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: border-color .15s, color .15s;
+        }
+
+        .plan-btn:hover {
+            border-color: #1a5a7a;
+            color: #4a9aba;
+        }
+
+        /* ── COACH SECTION ──────────────────────────────────────────────── */
+        .coach-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .coach-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+        }
+
+        .coach-card.am {
+            border-left: 2px solid var(--accent);
+        }
+
+        .coach-card.pm {
+            border-left: 2px solid #1a5a7a;
+        }
+
+        .coach-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .coach-card.am .coach-label {
+            color: var(--accent);
+        }
+
+        .coach-card.pm .coach-label {
+            color: #4a9aba;
+        }
+
+        .coach-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .coach-card.am .coach-dot {
+            background: var(--accent);
+        }
+
+        .coach-card.pm .coach-dot {
+            background: #1a5a7a;
+        }
+
+        .coach-text {
+            font-size: 12px;
+            color: var(--text);
+            line-height: 1.65;
+        }
+
+        .coach-text.loading {
+            color: var(--muted);
+            font-style: italic;
+            font-size: 11px;
+        }
+
+        /* ── TABS ───────────────────────────────────────────────────────── */
         .tabs {
             display: flex;
             gap: 2px;
             margin-bottom: 20px;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 0;
         }
 
         .tab {
@@ -77,7 +214,7 @@
             display: block;
         }
 
-        /* HEADER */
+        /* ── HEADER ─────────────────────────────────────────────────────── */
         .header {
             display: flex;
             justify-content: space-between;
@@ -112,7 +249,7 @@
             border-color: var(--accent);
         }
 
-        /* SETUP */
+        /* ── SETUP ──────────────────────────────────────────────────────── */
         .setup-banner {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -145,7 +282,7 @@
             border-color: var(--accent);
         }
 
-        /* TIER BANNER */
+        /* ── TIER BANNER ────────────────────────────────────────────────── */
         .tier-banner {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -226,7 +363,7 @@
             color: var(--tier-c);
         }
 
-        /* METRICS */
+        /* ── METRICS ────────────────────────────────────────────────────── */
         .metrics {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -273,65 +410,7 @@
             color: var(--red);
         }
 
-        /* CHARTS */
-        .charts {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .chart-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-        }
-
-        .chart-card.full {
-            grid-column: 1/-1;
-        }
-
-        .chart-title {
-            font-size: 10px;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            margin-bottom: 14px;
-        }
-
-        .chart-wrap {
-            position: relative;
-            width: 100%;
-            height: 230px;
-        }
-
-        .chart-wrap.tall {
-            height: 280px;
-        }
-
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 11px;
-            color: var(--muted);
-        }
-
-        .legend-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 2px;
-            flex-shrink: 0;
-        }
-
-        /* AREA GRID */
+        /* ── AREA GRID ──────────────────────────────────────────────────── */
         .area-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -394,7 +473,7 @@
             font-weight: 500;
         }
 
-        /* HABIT RATES */
+        /* ── HABIT RATES ────────────────────────────────────────────────── */
         .habit-list {
             display: flex;
             flex-direction: column;
@@ -439,7 +518,65 @@
             flex-shrink: 0;
         }
 
-        /* AI INSIGHT */
+        /* ── CHARTS ─────────────────────────────────────────────────────── */
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .chart-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+
+        .chart-card.full {
+            grid-column: 1/-1;
+        }
+
+        .chart-title {
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 14px;
+        }
+
+        .chart-wrap {
+            position: relative;
+            width: 100%;
+            height: 230px;
+        }
+
+        .chart-wrap.tall {
+            height: 280px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* ── AI INSIGHT ─────────────────────────────────────────────────── */
         .insight-card {
             background: var(--surface);
             border: 1px solid rgba(196, 98, 26, 0.35);
@@ -469,13 +606,12 @@
             font-weight: 400;
         }
 
-        /* WORD CLOUD */
+        /* ── WORD CLOUD / HEATMAP ───────────────────────────────────────── */
         #wordCloudCanvas {
             width: 100% !important;
             height: 100% !important;
         }
 
-        /* HEATMAP */
         .heatmap-grid {
             display: flex;
             flex-wrap: wrap;
@@ -506,7 +642,7 @@
             background: #c4621a;
         }
 
-        /* STATE */
+        /* ── STATE ──────────────────────────────────────────────────────── */
         .state {
             color: var(--muted);
             font-size: 12px;
@@ -527,6 +663,10 @@
                 grid-template-columns: repeat(2, 1fr);
             }
 
+            .coach-grid {
+                grid-template-columns: 1fr;
+            }
+
             .charts {
                 grid-template-columns: 1fr;
             }
@@ -538,11 +678,31 @@
             .habit-name {
                 width: 140px;
             }
+
+            .verse-banner {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .verse-side {
+                align-items: flex-start;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
 
 <body>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+       CONFIG — update YOUVERSION_PLAN_URL and YOUVERSION_PLAN_NAME
+       to your reading plan link from Bible.com / YouVersion
+  ══════════════════════════════════════════════════════════════════════ -->
+    <script>
+        const YOUVERSION_PLAN_URL = 'https://www.bible.com/users/emanuelbenavides012/reading-plans/70779-devocional-mayo-arbol-de-vida/subscription/1288335562/day/1';  // ← paste your plan URL here
+        const YOUVERSION_PLAN_NAME = 'Devocional Mayo — Árbol de Vida';                        // ← your plan name
+    </script>
 
     <div class="header">
         <div>
@@ -552,12 +712,31 @@
         <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
     </div>
 
+    <!-- VERSE BANNER -->
+    <div class="verse-banner" id="verse-banner">
+        <div class="verse-icon">📖</div>
+        <div class="verse-content" id="verse-content-col">
+            <div class="verse-label">Word for Today</div>
+            <div class="verse-text" id="verse-text">Loading verse of the day…</div>
+            <div class="verse-reference" id="verse-ref"></div>
+        </div>
+        <div class="verse-side">
+            <a class="plan-btn" id="plan-link" href="#" target="_blank" rel="noopener">
+                📅 Reading Plan →
+            </a>
+            <a class="plan-btn" href="https://www.bible.com/verse-of-the-day" target="_blank" rel="noopener"
+                style="margin-top:0;">
+                📖 YouVersion →
+            </a>
+        </div>
+    </div>
+
     <div class="tabs">
         <div class="tab active" onclick="switchTab('habits')">🏆 100 Days</div>
         <div class="tab" onclick="switchTab('journal')">📓 Journaling</div>
     </div>
 
-    <!-- ═══════════════════ TAB: 100 DAYS ═══════════════════ -->
+    <!-- ══════════════ TAB: 100 DAYS ══════════════ -->
     <div class="tab-content active" id="tab-habits">
 
         <div class="setup-banner">
@@ -565,48 +744,49 @@
             <input type="date" id="start-date" />
         </div>
 
+        <!-- AI COACHING -->
+        <div class="coach-grid">
+            <div class="coach-card am">
+                <div class="coach-label"><span class="coach-dot"></span>AM Coach — Before the Day</div>
+                <div class="coach-text loading" id="coach-am">Loading morning advice…</div>
+            </div>
+            <div class="coach-card pm">
+                <div class="coach-label"><span class="coach-dot"></span>PM Coach — End of Day</div>
+                <div class="coach-text loading" id="coach-pm">Loading evening debrief…</div>
+            </div>
+        </div>
+
         <div id="h-loading" class="state">Fetching habit data…</div>
         <div id="h-error" class="state" style="display:none;color:var(--red);"></div>
 
         <div id="h-dashboard" style="display:none;">
-
-            <!-- TIER BANNER -->
             <div class="tier-banner">
                 <div class="tier-card">
                     <div class="tier-label">S-Days — Perfect</div>
-                    <div class="tier-row">
-                        <span class="tier-badge S">S</span>
-                        <span class="tier-count S" id="tier-s">—</span>
-                    </div>
+                    <div class="tier-row"><span class="tier-badge S">S</span><span class="tier-count S"
+                            id="tier-s">—</span></div>
                     <div class="metric-sub">10/10 — the only standard</div>
                 </div>
                 <div class="tier-card">
                     <div class="tier-label">A-Days — Strong</div>
-                    <div class="tier-row">
-                        <span class="tier-badge A">A</span>
-                        <span class="tier-count A" id="tier-a">—</span>
-                    </div>
+                    <div class="tier-row"><span class="tier-badge A">A</span><span class="tier-count A"
+                            id="tier-a">—</span></div>
                     <div class="metric-sub">8–9 habits</div>
                 </div>
                 <div class="tier-card">
                     <div class="tier-label">B-Days — Acceptable</div>
-                    <div class="tier-row">
-                        <span class="tier-badge B">B</span>
-                        <span class="tier-count B" id="tier-b">—</span>
-                    </div>
+                    <div class="tier-row"><span class="tier-badge B">B</span><span class="tier-count B"
+                            id="tier-b">—</span></div>
                     <div class="metric-sub">6–7 habits</div>
                 </div>
                 <div class="tier-card">
                     <div class="tier-label">C-Days — Below Standard</div>
-                    <div class="tier-row">
-                        <span class="tier-badge C">C</span>
-                        <span class="tier-count C" id="tier-c">—</span>
-                    </div>
+                    <div class="tier-row"><span class="tier-badge C">C</span><span class="tier-count C"
+                            id="tier-c">—</span></div>
                     <div class="metric-sub">&lt;6 habits</div>
                 </div>
             </div>
 
-            <!-- KEY METRICS -->
             <div class="metrics">
                 <div class="metric">
                     <div class="metric-label">Current day</div>
@@ -630,43 +810,36 @@
                 </div>
             </div>
 
-            <!-- AREA GRID -->
             <div class="area-grid" id="area-grid"></div>
 
-            <!-- CHARTS -->
             <div class="charts">
                 <div class="chart-card">
-                    <div class="chart-title">Wheel of life — avg by area (equal weight)</div>
-                    <div class="chart-wrap"><canvas id="radarChart" role="img"
-                            aria-label="Radar chart of life areas"></canvas></div>
+                    <div class="chart-title">Wheel of life — avg by area</div>
+                    <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
                     <div class="legend" id="radar-legend"></div>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-title">Day quality — S / A / B / C distribution</div>
-                    <div class="chart-wrap"><canvas id="donutChart" role="img"
-                            aria-label="Donut chart of day quality tiers"></canvas></div>
+                    <div class="chart-title">Day quality — S / A / B / C</div>
+                    <div class="chart-wrap"><canvas id="donutChart"></canvas></div>
                     <div class="legend" id="donut-legend"></div>
                 </div>
                 <div class="chart-card full">
                     <div class="chart-title">Habit completion rate — weakest first</div>
-                    <div id="habit-rates-list" class="habit-list" style="padding: 4px 0;"></div>
+                    <div id="habit-rates-list" class="habit-list" style="padding:4px 0;"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ═══════════════════ TAB: JOURNALING ═══════════════════ -->
+    <!-- ══════════════ TAB: JOURNALING ══════════════ -->
     <div class="tab-content" id="tab-journal">
         <div id="j-loading" class="state">Fetching journaling data…</div>
         <div id="j-error" class="state" style="display:none;color:var(--red);"></div>
-
         <div id="j-dashboard" style="display:none;">
-
             <div class="insight-card">
-                <div class="insight-label">✦ Insight</div>
+                <div class="insight-label">✦ Journal Insight</div>
                 <div class="insight-text" id="ai-insight">Analyzing your journals…</div>
             </div>
-
             <div class="metrics" style="margin-bottom:14px;">
                 <div class="metric">
                     <div class="metric-label">Total entries</div>
@@ -689,32 +862,26 @@
                     <div class="metric-sub" id="j-split-sub">morning vs evening</div>
                 </div>
             </div>
-
             <div class="charts">
                 <div class="chart-card">
                     <div class="chart-title">Word cloud — top concepts</div>
-                    <div class="chart-wrap tall" id="wordCloudWrap">
-                        <canvas id="wordCloudCanvas"></canvas>
-                    </div>
+                    <div class="chart-wrap tall" id="wordCloudWrap"><canvas id="wordCloudCanvas"></canvas></div>
                 </div>
                 <div class="chart-card">
                     <div class="chart-title">Writing balance — morning vs evening</div>
-                    <div class="chart-wrap tall"><canvas id="polarChart" role="img"
-                            aria-label="Polar area chart of AM vs PM writing balance"></canvas></div>
+                    <div class="chart-wrap tall"><canvas id="polarChart"></canvas></div>
                     <div class="legend" id="polar-legend"></div>
                 </div>
                 <div class="chart-card full">
-                    <div class="chart-title">Writing volume — words per entry over time</div>
-                    <div class="chart-wrap"><canvas id="lineChart" role="img"
-                            aria-label="Line chart of word count per journal entry"></canvas></div>
+                    <div class="chart-title">Writing volume — words per entry</div>
+                    <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-title">Top words — frequency bubble chart</div>
-                    <div class="chart-wrap tall"><canvas id="bubbleChart" role="img"
-                            aria-label="Bubble chart of most frequent words"></canvas></div>
+                    <div class="chart-title">Top words — frequency</div>
+                    <div class="chart-wrap tall"><canvas id="bubbleChart"></canvas></div>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-title">Writing calendar — entry activity</div>
+                    <div class="chart-title">Writing calendar</div>
                     <div id="heatmap-container" style="padding:4px 0;overflow-x:auto;"></div>
                 </div>
             </div>
@@ -722,27 +889,87 @@
     </div>
 
     <script>
-        // ── GLOBALS ──────────────────────────────────────────────────────────────────
+        // ── CONFIG ───────────────────────────────────────────────────────────────
         const AREA_COLORS = ['#c4621a', '#1a7a5c', '#d4841e', '#b83020', '#1a5a7a', '#8b3a4a'];
         let radarChart = null, donutChart = null, polarChart = null, lineChart = null, bubbleChart = null;
         let habitsLoaded = false, journalLoaded = false;
 
-        // ── TABS ─────────────────────────────────────────────────────────────────────
+        // ── TABS ─────────────────────────────────────────────────────────────────
         function switchTab(name) {
             document.querySelectorAll('.tab').forEach((t, i) => {
-                const n = ['habits', 'journal'][i];
-                t.classList.toggle('active', n === name);
+                t.classList.toggle('active', ['habits', 'journal'][i] === name);
             });
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById('tab-' + name).classList.add('active');
             if (name === 'journal' && !journalLoaded) loadJournaling();
         }
 
-        // ── HABITS ────────────────────────────────────────────────────────────────────
+        // ── VERSE ────────────────────────────────────────────────────────────────
+        async function loadVerse() {
+            // Set reading plan link from config
+            const planLink = document.getElementById('plan-link');
+            planLink.href = YOUVERSION_PLAN_URL;
+            planLink.textContent = `📅 ${YOUVERSION_PLAN_NAME} →`;
+
+            try {
+                const res = await fetch('verse.json?t=' + Date.now());
+                if (!res.ok) return;
+                const data = await res.json();
+
+                document.getElementById('verse-text').textContent = data.text || '—';
+                document.getElementById('verse-ref').innerHTML = data.reference
+                    ? `<a href="${data.votdUrl || 'https://www.bible.com/verse-of-the-day'}" target="_blank" rel="noopener" style="color:var(--muted);text-decoration:none;">— ${data.reference}${data.version ? ' (' + data.version + ')' : ''} ↗</a>`
+                    : '';
+
+                // Show VOTD image if available (YouVersion card image)
+                if (data.image) {
+                    let imgEl = document.getElementById('verse-img');
+                    if (!imgEl) {
+                        imgEl = document.createElement('img');
+                        imgEl.id = 'verse-img';
+                        imgEl.style.cssText = 'width:100%;max-width:340px;border-radius:8px;margin-top:10px;object-fit:cover;display:block;';
+                        document.getElementById('verse-content-col').appendChild(imgEl);
+                    }
+                    imgEl.src = data.image;
+                    imgEl.alt = data.reference || 'Verse of the Day';
+                }
+            } catch { }
+        }
+
+        // ── COACHING ─────────────────────────────────────────────────────────────
+        async function loadCoaching() {
+            try {
+                const res = await fetch('coaching.json?t=' + Date.now());
+                if (!res.ok) return;
+                const data = await res.json();
+
+                const amEl = document.getElementById('coach-am');
+                const pmEl = document.getElementById('coach-pm');
+
+                if (data.coachAM) {
+                    amEl.textContent = data.coachAM;
+                    amEl.classList.remove('loading');
+                } else {
+                    amEl.textContent = 'AM coaching will appear at 4:30 AM Bogotá — run the Generate Coaching action manually to test.';
+                }
+
+                if (data.coachPM) {
+                    pmEl.textContent = data.coachPM;
+                    pmEl.classList.remove('loading');
+                } else {
+                    pmEl.textContent = 'PM coaching will appear at 9:30 PM Bogotá after your end-of-day reflection.';
+                }
+            } catch {
+                document.getElementById('coach-am').textContent = 'coaching.json not found — run Generate Coaching action first.';
+                document.getElementById('coach-pm').textContent = '';
+            }
+        }
+
+        // ── HABITS ───────────────────────────────────────────────────────────────
         async function loadHabits() {
             try {
                 const res = await fetch('data.json?t=' + Date.now());
-                if (!res.ok) throw new Error('data.json not found — run "Fetch Notion Data" action first.');
+                if (!res.ok) throw new Error('data.json not found — run Fetch Notion Data action first.');
                 const data = await res.json();
                 renderHabits(data);
                 document.getElementById('updated-at').textContent = 'Last updated: ' + new Date(data.updatedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -753,73 +980,51 @@
             }
         }
 
-        function getTierColor(tier) {
-            return { S: '#c4621a', A: '#1a7a5c', B: '#d4841e', C: '#b83020' }[tier] || '#c4621a';
-        }
-
-        function habitBarColor(rate) {
-            if (rate >= 85) return '#1a7a5c';
-            if (rate >= 65) return '#d4841e';
-            return '#b83020';
-        }
+        function habitBarColor(r) { return r >= 85 ? '#1a7a5c' : r >= 65 ? '#d4841e' : '#b83020'; }
 
         function renderHabits(data) {
-            // Day number
             const startVal = document.getElementById('start-date').value;
             let dayNum = data.daysLogged;
             if (startVal) { const diff = Math.floor((Date.now() - new Date(startVal)) / 86400000) + 1; dayNum = Math.max(1, Math.min(diff, 100)); }
             document.getElementById('m-day').textContent = dayNum;
 
-            // Tier banner
             const tc = data.tierCounts || { S: data.perfectDays || 0, A: 0, B: 0, C: 0 };
             document.getElementById('tier-s').textContent = tc.S ?? 0;
             document.getElementById('tier-a').textContent = tc.A ?? 0;
             document.getElementById('tier-b').textContent = tc.B ?? 0;
             document.getElementById('tier-c').textContent = tc.C ?? 0;
 
-            // Streak (10/10 only)
             const streakEl = document.getElementById('m-streak');
             streakEl.textContent = data.streak;
             streakEl.className = 'metric-value ' + (data.streak >= 7 ? 'good' : data.streak >= 3 ? 'warn' : data.streak === 0 ? 'bad' : '');
-            const bestStr = data.bestStreak ? `Best: ${data.bestStreak}` : 'consecutive perfect days';
-            document.getElementById('m-best-streak').textContent = bestStr;
+            document.getElementById('m-best-streak').textContent = data.bestStreak ? `Best: ${data.bestStreak}` : 'consecutive perfect days';
 
-            // Avg7
             const avgEl = document.getElementById('m-avg');
             avgEl.textContent = data.avg7.toFixed(1);
             avgEl.className = 'metric-value ' + (data.avg7 >= 9 ? 'good' : data.avg7 >= 7 ? 'warn' : 'bad');
             if (data.improvement !== null) {
-                const s = data.improvement >= 0 ? '+' : '';
                 const el = document.getElementById('m-improvement');
-                el.textContent = s + data.improvement + '% vs prev 7 days';
+                el.textContent = (data.improvement >= 0 ? '+' : '') + data.improvement + '% vs prev 7 days';
                 el.style.color = data.improvement >= 0 ? 'var(--green)' : 'var(--red)';
             }
 
-            // S-days last 7
             const s7 = data.sDaysLast7 ?? 0;
             const s7El = document.getElementById('m-s7');
             s7El.textContent = s7;
             s7El.className = 'metric-value ' + (s7 >= 5 ? 'good' : s7 >= 3 ? 'warn' : 'bad');
 
             // Area grid
-            const areaGrid = document.getElementById('area-grid');
-            areaGrid.innerHTML = (data.areaLabels || []).map((label, i) => {
+            document.getElementById('area-grid').innerHTML = (data.areaLabels || []).map((label, i) => {
                 const avg = data.areaAvgs?.[i] ?? 0;
                 const trend = data.areaTrends?.[i] ?? 0;
-                const trendClass = trend > 3 ? 'up' : trend < -3 ? 'down' : 'flat';
-                const trendStr = trend > 0 ? `↑ +${trend}%` : trend < 0 ? `↓ ${trend}%` : '→ stable';
+                const tClass = trend > 3 ? 'up' : trend < -3 ? 'down' : 'flat';
+                const tStr = trend > 0 ? `↑ +${trend}%` : trend < 0 ? `↓ ${trend}%` : '→ stable';
                 const color = AREA_COLORS[i];
-                return `
-                    <div class="area-card">
-                        <div class="area-name">
-                            <span>${label}</span>
-                            <span class="area-trend ${trendClass}">${trendStr}</span>
-                        </div>
-                        <div class="area-bar-track">
-                            <div class="area-bar-fill" style="width:${avg}%;background:${color};"></div>
-                        </div>
-                        <div class="area-pct" style="color:${color};">${avg}%</div>
-                    </div>`;
+                return `<div class="area-card">
+          <div class="area-name"><span>${label}</span><span class="area-trend ${tClass}">${tStr}</span></div>
+          <div class="area-bar-track"><div class="area-bar-fill" style="width:${avg}%;background:${color};"></div></div>
+          <div class="area-pct" style="color:${color};">${avg}%</div>
+        </div>`;
             }).join('');
 
             // Radar
@@ -830,42 +1035,32 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, color: 'rgba(255,255,255,0.3)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(196,98,26,0.1)' }, angleLines: { color: 'rgba(196,98,26,0.1)' }, pointLabels: { color: 'rgba(232,226,214,0.55)', font: { size: 10 } } } } }
             });
             document.getElementById('radar-legend').innerHTML = (data.areaLabels || []).map((l, i) =>
-                `<div class="legend-item"><div class="legend-dot" style="background:${AREA_COLORS[i]}"></div>${l}: ${data.areaAvgs?.[i] ?? 0}%</div>`
-            ).join('');
+                `<div class="legend-item"><div class="legend-dot" style="background:${AREA_COLORS[i]}"></div>${l}: ${data.areaAvgs?.[i] ?? 0}%</div>`).join('');
 
-            // Donut — S/A/B/C tiers
-            const tierLabels = ['S — Perfect', 'A — Strong', 'B — Acceptable', 'C — Below std'];
-            const tierColors = ['#c4621a', '#1a7a5c', '#d4841e', '#b83020'];
-            const tierVals = [tc.S ?? 0, tc.A ?? 0, tc.B ?? 0, tc.C ?? 0];
-            const nonZeroIdx = tierVals.map((v, i) => v > 0 ? i : -1).filter(i => i >= 0);
-            const dl = nonZeroIdx.map(i => tierLabels[i]);
-            const dd = nonZeroIdx.map(i => tierVals[i]);
-            const dc = nonZeroIdx.map(i => tierColors[i]);
+            // Donut — tiers
+            const tL = ['S — Perfect', 'A — Strong', 'B — Acceptable', 'C — Below std'];
+            const tC = ['#c4621a', '#1a7a5c', '#d4841e', '#b83020'];
+            const tV = [tc.S ?? 0, tc.A ?? 0, tc.B ?? 0, tc.C ?? 0];
+            const nz = tV.map((v, i) => v > 0 ? i : -1).filter(i => i >= 0);
             if (donutChart) donutChart.destroy();
             donutChart = new Chart(document.getElementById('donutChart'), {
                 type: 'doughnut',
-                data: { labels: dl, datasets: [{ data: dd, backgroundColor: dc, borderColor: '#07080f', borderWidth: 2, hoverOffset: 4 }] },
+                data: { labels: nz.map(i => tL[i]), datasets: [{ data: nz.map(i => tV[i]), backgroundColor: nz.map(i => tC[i]), borderColor: '#07080f', borderWidth: 2, hoverOffset: 4 }] },
                 options: { responsive: true, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { display: false } } }
             });
-            document.getElementById('donut-legend').innerHTML = dl.map((l, i) =>
-                `<div class="legend-item"><div class="legend-dot" style="background:${dc[i]}"></div>${l}: ${dd[i]}d</div>`
-            ).join('');
+            document.getElementById('donut-legend').innerHTML = nz.map(i =>
+                `<div class="legend-item"><div class="legend-dot" style="background:${tC[i]}"></div>${tL[i]}: ${tV[i]}d</div>`).join('');
 
-            // Habit completion rates — sorted weakest first
-            if (data.habitRates && data.habitRates.length > 0) {
+            // Habit rates
+            if (data.habitRates?.length) {
                 const sorted = [...data.habitRates].sort((a, b) => a.rate - b.rate);
-                const container = document.getElementById('habit-rates-list');
-                container.innerHTML = sorted.map(h => {
+                document.getElementById('habit-rates-list').innerHTML = sorted.map(h => {
                     const name = h.prop.replace(/^[^\w]+/, '').trim();
-                    const color = habitBarColor(h.rate);
-                    return `
-                        <div class="habit-row">
-                            <div class="habit-name" title="${name}">${name}</div>
-                            <div class="habit-bar-track">
-                                <div class="habit-bar-fill" style="width:${h.rate}%;background:${color};"></div>
-                            </div>
-                            <div class="habit-rate-pct">${h.rate}%</div>
-                        </div>`;
+                    return `<div class="habit-row">
+            <div class="habit-name" title="${name}">${name}</div>
+            <div class="habit-bar-track"><div class="habit-bar-fill" style="width:${h.rate}%;background:${habitBarColor(h.rate)};"></div></div>
+            <div class="habit-rate-pct">${h.rate}%</div>
+          </div>`;
                 }).join('');
             }
 
@@ -873,11 +1068,11 @@
             document.getElementById('h-dashboard').style.display = 'block';
         }
 
-        // ── JOURNALING ────────────────────────────────────────────────────────────────
+        // ── JOURNALING ───────────────────────────────────────────────────────────
         async function loadJournaling() {
             try {
                 const res = await fetch('journaling-data.json?t=' + Date.now());
-                if (!res.ok) throw new Error('journaling-data.json not found — run "Fetch Journaling Data" action first.');
+                if (!res.ok) throw new Error('journaling-data.json not found — run Fetch Journaling Data action first.');
                 const data = await res.json();
                 renderJournaling(data);
                 journalLoaded = true;
@@ -895,29 +1090,20 @@
             document.getElementById('j-split-sub').textContent = `AM · ${data.sectionBalance.pm.pct}% PM`;
 
             const insightEl = document.getElementById('ai-insight');
-            if (data.aiInsight) {
-                insightEl.textContent = data.aiInsight;
-                insightEl.classList.remove('loading');
-            } else {
-                insightEl.textContent = 'Not enough data yet — keep journaling to unlock AI insights.';
-                insightEl.classList.add('loading');
-            }
+            if (data.aiInsight) { insightEl.textContent = data.aiInsight; insightEl.classList.remove('loading'); }
+            else { insightEl.textContent = 'Not enough data yet — keep journaling.'; insightEl.classList.add('loading'); }
 
-            // Word Cloud
-            if (data.wordFrequency && data.wordFrequency.length > 0) {
+            if (data.wordFrequency?.length) {
                 const wrap = document.getElementById('wordCloudWrap');
                 const canvas = document.getElementById('wordCloudCanvas');
-                canvas.width = wrap.offsetWidth || 400;
-                canvas.height = wrap.offsetHeight || 280;
-                const maxCount = data.wordFrequency[0].count || 1;
-                const list = data.wordFrequency.slice(0, 60).map(w => [w.word, Math.round(10 + w.count / maxCount * 40)]);
-                const colors = ['#c4621a', '#d4841e', '#1a7a5c', '#b83020', '#1a5a7a', '#8b3a4a'];
-                WordCloud(canvas, { list, gridSize: 8, weightFactor: 1, fontFamily: 'sans-serif', color: () => colors[Math.floor(Math.random() * colors.length)], rotateRatio: 0.3, backgroundColor: 'transparent', minSize: 10 });
+                canvas.width = wrap.offsetWidth || 400; canvas.height = wrap.offsetHeight || 280;
+                const maxC = data.wordFrequency[0].count || 1;
+                const list = data.wordFrequency.slice(0, 60).map(w => [w.word, Math.round(10 + w.count / maxC * 40)]);
+                const cols = ['#c4621a', '#d4841e', '#1a7a5c', '#b83020', '#1a5a7a', '#8b3a4a'];
+                WordCloud(canvas, { list, gridSize: 8, weightFactor: 1, fontFamily: 'sans-serif', color: () => cols[Math.floor(Math.random() * cols.length)], rotateRatio: 0.3, backgroundColor: 'transparent', minSize: 10 });
             }
 
-            // Polar
-            const amPct = data.sectionBalance.am.pct;
-            const pmPct = data.sectionBalance.pm.pct;
+            const amPct = data.sectionBalance.am.pct, pmPct = data.sectionBalance.pm.pct;
             if (polarChart) polarChart.destroy();
             polarChart = new Chart(document.getElementById('polarChart'), {
                 type: 'polarArea',
@@ -925,27 +1111,21 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.07)' } } } }
             });
             document.getElementById('polar-legend').innerHTML = [
-                { l: 'AM — Morning', c: '#c4621a', v: amPct + '%' },
-                { l: 'PM — Evening', c: '#1a7a5c', v: pmPct + '%' }
+                { l: 'AM — Morning', c: '#c4621a', v: amPct + '%' }, { l: 'PM — Evening', c: '#1a7a5c', v: pmPct + '%' }
             ].map(x => `<div class="legend-item"><div class="legend-dot" style="background:${x.c}"></div>${x.l}: ${x.v}</div>`).join('');
 
-            // Line
             if (lineChart) lineChart.destroy();
-            const lineLabels = data.wordsByDate.map(d => d.date ? new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '?');
             lineChart = new Chart(document.getElementById('lineChart'), {
                 type: 'line',
-                data: { labels: lineLabels, datasets: [{ label: 'Words', data: data.wordsByDate.map(d => d.count), borderColor: '#c4621a', backgroundColor: 'rgba(196,98,26,0.08)', borderWidth: 1.5, pointRadius: 3, pointBackgroundColor: '#c4621a', tension: 0.3, fill: true }] },
+                data: { labels: data.wordsByDate.map(d => d.date ? new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '?'), datasets: [{ label: 'Words', data: data.wordsByDate.map(d => d.count), borderColor: '#c4621a', backgroundColor: 'rgba(196,98,26,0.08)', borderWidth: 1.5, pointRadius: 3, pointBackgroundColor: '#c4621a', tension: 0.3, fill: true }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
             });
 
-            // Bubble
             if (bubbleChart) bubbleChart.destroy();
-            const top = data.wordFrequency.slice(0, 20);
-            const maxC = top[0]?.count || 1;
-            const cols = ['#c4621a', '#1a7a5c', '#d4841e', '#b83020', '#1a5a7a', '#8b3a4a'];
+            const top = data.wordFrequency.slice(0, 20), maxB = top[0]?.count || 1, colsB = ['#c4621a', '#1a7a5c', '#d4841e', '#b83020', '#1a5a7a', '#8b3a4a'];
             bubbleChart = new Chart(document.getElementById('bubbleChart'), {
                 type: 'bubble',
-                data: { datasets: top.map((w, i) => ({ label: w.word, data: [{ x: (i % 5) * 20 + 10 + (Math.random() - 0.5) * 6, y: Math.floor(i / 5) * 22 + 15 + (Math.random() - 0.5) * 4, r: Math.max(6, Math.round(w.count / maxC * 28)) }], backgroundColor: cols[i % cols.length] + '99', borderColor: cols[i % cols.length], borderWidth: 1 })) },
+                data: { datasets: top.map((w, i) => ({ label: w.word, data: [{ x: (i % 5) * 20 + 10 + (Math.random() - .5) * 6, y: Math.floor(i / 5) * 22 + 15 + (Math.random() - .5) * 4, r: Math.max(6, Math.round(w.count / maxB * 28)) }], backgroundColor: colsB[i % colsB.length] + '99', borderColor: colsB[i % colsB.length], borderWidth: 1 })) },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${top[ctx.datasetIndex].count}x` } } }, scales: { x: { display: false }, y: { display: false } }, layout: { padding: 10 } }
             });
 
@@ -956,30 +1136,28 @@
 
         function renderHeatmap(heatmapData) {
             const container = document.getElementById('heatmap-container');
-            if (!heatmapData || heatmapData.length === 0) { container.innerHTML = '<div style="color:var(--muted);font-size:11px;padding:20px 0;">No data yet</div>'; return; }
+            if (!heatmapData?.length) { container.innerHTML = '<div style="color:var(--muted);font-size:11px;padding:20px 0;">No data yet</div>'; return; }
             const dateMap = {};
             for (const d of heatmapData) { if (d.date) dateMap[d.date] = d.count; }
             const maxCount = Math.max(...Object.values(dateMap), 1);
-            const today = new Date();
-            const start = new Date(today); start.setDate(start.getDate() - (16 * 7 - 1));
+            const today = new Date(), start = new Date(today);
+            start.setDate(start.getDate() - (16 * 7 - 1));
             let html = '<div class="heatmap-grid">';
             const cur = new Date(start);
             while (cur <= today) {
-                const key = cur.toISOString().slice(0, 10);
-                const count = dateMap[key] || 0;
+                const key = cur.toISOString().slice(0, 10), count = dateMap[key] || 0;
                 let level = 0;
-                if (count > 0) level = count > maxCount * 0.75 ? 4 : count > maxCount * 0.5 ? 3 : count > maxCount * 0.25 ? 2 : 1;
+                if (count > 0) level = count > maxCount * .75 ? 4 : count > maxCount * .5 ? 3 : count > maxCount * .25 ? 2 : 1;
                 html += `<div class="heatmap-cell level-${level}" title="${key}${count > 0 ? ' — ' + count + ' words' : ''}"></div>`;
                 cur.setDate(cur.getDate() + 1);
             }
-            html += '</div>';
-            html += '<div style="display:flex;gap:8px;margin-top:8px;font-size:10px;color:var(--muted);align-items:center;"><span>Less</span>';
+            html += '</div><div style="display:flex;gap:8px;margin-top:8px;font-size:10px;color:var(--muted);align-items:center;"><span>Less</span>';
             [0, 1, 2, 3, 4].forEach(l => html += `<div class="heatmap-cell level-${l}" style="width:10px;height:10px;display:inline-block;"></div>`);
             html += '<span>More</span></div>';
             container.innerHTML = html;
         }
 
-        // ── UTILS ─────────────────────────────────────────────────────────────────────
+        // ── UTILS ────────────────────────────────────────────────────────────────
         function show(id, msg) { const el = document.getElementById(id); el.style.display = 'block'; el.textContent = msg; }
 
         async function loadAll() {
@@ -987,12 +1165,11 @@
             document.getElementById('h-loading').style.display = 'block';
             document.getElementById('h-dashboard').style.display = 'none';
             document.getElementById('h-error').style.display = 'none';
-            await loadHabits();
-            const activeTab = document.querySelector('.tab.active');
-            if (activeTab && activeTab.textContent.includes('Journal')) loadJournaling();
+            await Promise.all([loadVerse(), loadCoaching(), loadHabits()]);
+            if (document.querySelector('.tab.active')?.textContent.includes('Journal')) loadJournaling();
         }
 
-        // ── INIT ──────────────────────────────────────────────────────────────────────
+        // ── INIT ─────────────────────────────────────────────────────────────────
         const saved = localStorage.getItem('lb_start');
         if (saved) document.getElementById('start-date').value = saved;
         document.getElementById('start-date').addEventListener('change', e => {
@@ -1000,8 +1177,8 @@
             if (habitsLoaded) loadHabits();
         });
 
-        loadHabits();
-        setInterval(() => { loadHabits(); if (journalLoaded) loadJournaling(); }, 5 * 60 * 1000);
+        loadAll();
+        setInterval(() => { loadHabits(); loadVerse(); loadCoaching(); if (journalLoaded) loadJournaling(); }, 5 * 60 * 1000);
     </script>
 </body>
 
