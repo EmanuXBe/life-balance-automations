@@ -244,9 +244,86 @@
             transition: color .15s, border-color .15s;
         }
 
-        .refresh-btn:hover {
+        .refresh-btn:hover:not(:disabled) {
             color: var(--text);
             border-color: var(--accent);
+        }
+
+        .refresh-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .settings-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px 6px;
+            margin-left: 4px;
+            opacity: 0.5;
+            transition: opacity .15s;
+        }
+
+        .settings-btn:hover { opacity: 1; }
+
+        .pat-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.65);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pat-modal-overlay.open { display: flex; }
+
+        .pat-modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px;
+            width: 340px;
+            max-width: 90vw;
+        }
+
+        .pat-modal h3 { margin: 0 0 8px; font-size: 14px; }
+
+        .pat-modal p { font-size: 12px; color: var(--muted); margin: 0 0 14px; line-height: 1.5; }
+
+        .pat-modal input {
+            width: 100%;
+            box-sizing: border-box;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 12px;
+            padding: 8px 10px;
+            margin-bottom: 12px;
+            font-family: monospace;
+        }
+
+        .pat-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+        .pat-modal-actions button {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .pat-modal-actions .btn-save {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
         }
 
         /* ── SETUP ──────────────────────────────────────────────────────── */
@@ -704,12 +781,28 @@
         const YOUVERSION_PLAN_NAME = 'Devocional Mayo — Árbol de Vida';                        // ← your plan name
     </script>
 
+    <!-- PAT SETUP MODAL -->
+    <div class="pat-modal-overlay" id="pat-modal-overlay">
+        <div class="pat-modal">
+            <h3>GitHub Token</h3>
+            <p>Enter a Personal Access Token with <strong>Actions: write</strong> permission. Stored only in your browser's localStorage — never sent anywhere except GitHub's API.</p>
+            <input type="password" id="pat-input" placeholder="github_pat_..." />
+            <div class="pat-modal-actions">
+                <button onclick="closePATModal()">Cancel</button>
+                <button class="btn-save" onclick="savePAT()">Save</button>
+            </div>
+        </div>
+    </div>
+
     <div class="header">
         <div>
             <div class="header-title">Life Balance</div>
             <div class="header-sub" id="updated-at">Loading…</div>
         </div>
-        <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+        <div style="display:flex;align-items:center;gap:2px;">
+            <button class="refresh-btn" id="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+            <button class="settings-btn" onclick="openPATModal()" title="Configure GitHub token">⚙</button>
+        </div>
     </div>
 
     <!-- VERSE BANNER -->
@@ -1160,11 +1253,110 @@
         // ── UTILS ────────────────────────────────────────────────────────────────
         function show(id, msg) { const el = document.getElementById(id); el.style.display = 'block'; el.textContent = msg; }
 
+        // ── GITHUB API ───────────────────────────────────────────────────────────
+        const GITHUB_REPO   = 'emanuelbenavides/life-balance-automations';
+        const GITHUB_BRANCH = 'main';
+
+        function getGHToken() { return localStorage.getItem('lb_gh_pat') || ''; }
+
+        function openPATModal() {
+            document.getElementById('pat-input').value = getGHToken();
+            document.getElementById('pat-modal-overlay').classList.add('open');
+        }
+
+        function closePATModal() {
+            document.getElementById('pat-modal-overlay').classList.remove('open');
+        }
+
+        function savePAT() {
+            const val = document.getElementById('pat-input').value.trim();
+            if (val) localStorage.setItem('lb_gh_pat', val);
+            else localStorage.removeItem('lb_gh_pat');
+            closePATModal();
+        }
+
+        function setRefreshLabel(text) {
+            const btn = document.getElementById('refresh-btn');
+            btn.textContent = text;
+            btn.disabled = text !== '↻ Refresh';
+        }
+
+        async function ghDispatch(token, workflow) {
+            const res = await fetch(
+                `https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${workflow}/dispatches`,
+                {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+                    body: JSON.stringify({ ref: GITHUB_BRANCH }),
+                }
+            );
+            if (!res.ok) throw new Error(`Failed to trigger ${workflow}: ${res.status}`);
+        }
+
+        async function ghWaitComplete(token, workflow, since, timeoutMs = 150000) {
+            const deadline = Date.now() + timeoutMs;
+            while (Date.now() < deadline) {
+                await new Promise(r => setTimeout(r, 7000));
+                const res = await fetch(
+                    `https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${workflow}/runs?per_page=5`,
+                    { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } }
+                );
+                const { workflow_runs } = await res.json();
+                const run = workflow_runs?.find(r => new Date(r.created_at) >= since && r.status === 'completed');
+                if (run) {
+                    if (run.conclusion !== 'success') throw new Error(`${workflow} failed: ${run.conclusion}`);
+                    return;
+                }
+            }
+            throw new Error(`Timeout waiting for ${workflow}`);
+        }
+
         async function loadAll() {
             habitsLoaded = false; journalLoaded = false;
             document.getElementById('h-loading').style.display = 'block';
             document.getElementById('h-dashboard').style.display = 'none';
             document.getElementById('h-error').style.display = 'none';
+
+            const token = getGHToken();
+
+            if (!token) {
+                // No token — just reload cached JSONs
+                await Promise.all([loadVerse(), loadCoaching(), loadHabits()]);
+                if (document.querySelector('.tab.active')?.textContent.includes('Journal')) loadJournaling();
+                return;
+            }
+
+            try {
+                const since = new Date(Date.now() - 4000);
+
+                // Step 1: trigger data + journaling in parallel
+                setRefreshLabel('Triggering sync…');
+                await Promise.all([
+                    ghDispatch(token, 'fetch-notion-data.yml'),
+                    ghDispatch(token, 'fetch-journaling-data.yml'),
+                ]);
+
+                // Step 2: wait for both to complete
+                setRefreshLabel('Syncing Notion…');
+                await Promise.all([
+                    ghWaitComplete(token, 'fetch-notion-data.yml', since),
+                    ghWaitComplete(token, 'fetch-journaling-data.yml', since),
+                ]);
+
+                // Step 3: trigger coaching with fresh data
+                setRefreshLabel('Generating coaching…');
+                const coachSince = new Date(Date.now() - 2000);
+                await ghDispatch(token, 'generate-coaching.yml');
+                await ghWaitComplete(token, 'generate-coaching.yml', coachSince);
+
+            } catch (e) {
+                console.warn('Sync error:', e.message);
+                // Fall through — still reload whatever is in the repo
+            } finally {
+                setRefreshLabel('↻ Refresh');
+            }
+
+            // Step 4: reload all data (fresh or fallback)
             await Promise.all([loadVerse(), loadCoaching(), loadHabits()]);
             if (document.querySelector('.tab.active')?.textContent.includes('Journal')) loadJournaling();
         }
