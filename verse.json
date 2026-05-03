@@ -1,1 +1,9 @@
-{"updatedAt":"","day":0,"votdUrl":"","text":"","reference":"","image":null,"version":"","source":""}
+{
+  "updatedAt": "2026-05-03T16:57:36.859Z",
+  "day": 123,
+  "votdUrl": "https://www.bible.com/verse-of-the-day?day=123",
+  "text": "Romans 1:16 For I am not ashamed of the gospel, for it is the power of God for salvation to everyone who believes, to the Jew first and also to the Greek.",
+  "reference": "Verse of the Day",
+  "image": "https://imageproxy.youversionapi.com/640x640/https://s3.amazonaws.com/static-youversionapi-com/images/base/98397/1280x1280.jpg",
+  "source": "youversion"
+}
