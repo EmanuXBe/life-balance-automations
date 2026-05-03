@@ -800,7 +800,7 @@
             <div class="header-sub" id="updated-at">Loading…</div>
         </div>
         <div style="display:flex;align-items:center;gap:2px;">
-            <button class="refresh-btn" id="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+            <button class="refresh-btn" id="refresh-btn" onclick="syncAll()">↻ Refresh</button>
             <button class="settings-btn" onclick="openPATModal()" title="Configure GitHub token">⚙</button>
         </div>
     </div>
@@ -1330,19 +1330,25 @@
             throw new Error(`Timeout waiting for ${workflow}`);
         }
 
+        // Loads JSON files from the repo — no workflow dispatch. Used on page init and auto-refresh.
         async function loadAll() {
             habitsLoaded = false; journalLoaded = false;
             document.getElementById('h-loading').style.display = 'block';
             document.getElementById('h-dashboard').style.display = 'none';
             document.getElementById('h-error').style.display = 'none';
+            await Promise.all([loadVerse(), loadCoaching(), loadHabits()]);
+            if (document.querySelector('.tab.active')?.textContent.includes('Journal')) loadJournaling();
+        }
 
+        // Dispatches all workflows and waits for results — only called by the Refresh button.
+        async function syncAll() {
             const token = getGHToken();
+            if (!token) { await loadAll(); return; }
 
-            if (!token) {
-                await Promise.all([loadVerse(), loadCoaching(), loadHabits()]);
-                if (document.querySelector('.tab.active')?.textContent.includes('Journal')) loadJournaling();
-                return;
-            }
+            habitsLoaded = false; journalLoaded = false;
+            document.getElementById('h-loading').style.display = 'block';
+            document.getElementById('h-dashboard').style.display = 'none';
+            document.getElementById('h-error').style.display = 'none';
 
             try {
                 // Snapshot current run IDs before dispatching
@@ -1360,15 +1366,15 @@
                     ghDispatch(token, 'daily-updates.yml'),
                 ]);
 
-                // Step 2: wait for all three to complete
+                // Step 2: wait for all three (non-fatal if one fails)
                 setRefreshLabel('Syncing Notion…');
-                await Promise.all([
+                await Promise.allSettled([
                     ghWaitComplete(token, 'fetch-notion-data.yml', prevNotion),
                     ghWaitComplete(token, 'fetch-journaling-data.yml', prevJournal),
                     ghWaitComplete(token, 'daily-updates.yml', prevVerse),
                 ]);
 
-                // Step 3: snapshot + dispatch coaching with fresh data
+                // Step 3: coaching always runs regardless of step 2 outcome
                 const prevCoach = await ghLatestRunId(token, 'generate-coaching.yml');
                 setRefreshLabel('Generating coaching…');
                 await ghDispatch(token, 'generate-coaching.yml');
@@ -1382,7 +1388,7 @@
                 setRefreshLabel('↻ Refresh');
             }
 
-            // Step 4: reload all fresh data
+            // Reload all fresh data regardless of errors
             await Promise.all([loadVerse(), loadCoaching(), loadHabits()]);
             if (document.querySelector('.tab.active')?.textContent.includes('Journal')) loadJournaling();
         }
@@ -1397,6 +1403,7 @@
 
         loadAll();
         setInterval(() => { loadHabits(); loadVerse(); loadCoaching(); if (journalLoaded) loadJournaling(); }, 5 * 60 * 1000);
+
     </script>
 </body>
 
