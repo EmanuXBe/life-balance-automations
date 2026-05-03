@@ -58,7 +58,7 @@ async function callGemini(prompt) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 250, temperature: 0.7 },
+      generationConfig: { maxOutputTokens: 500, temperature: 0.7 },
     }),
   });
   if (!res.ok) throw new Error(`Gemini API error: ${await res.text()}`);
