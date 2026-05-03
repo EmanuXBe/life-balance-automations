@@ -2,8 +2,8 @@ name: Generate AI Coaching — Dashboard
 
 on:
   schedule:
-    - cron: '30 9 * * *'   # 4:30 AM Bogotá — AM coach (before the day starts)
-    - cron: '30 2 * * *'   # 9:30 PM Bogotá — PM coach (end-of-day review)
+    - cron: '30 9 * * *'   # 4:30 AM Bogotá — AM coach
+    - cron: '30 2 * * *'   # 9:30 PM Bogotá — PM coach
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,9 @@ jobs:
 
       - name: Generate coaching advice
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          COACHING_PROVIDER: ${{ secrets.COACHING_PROVIDER }}   # "anthropic" or "gemini" — defaults to anthropic if not set
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY:    ${{ secrets.GEMINI_API_KEY }}
         run: node generate-coaching.js
 
       - name: Commit coaching.json
