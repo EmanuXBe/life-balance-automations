@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-04T11:25:31.669Z",
+  "updatedAt": "2026-05-04T13:04:34.127Z",
   "daysLogged": 5,
   "perfectDays": 0,
   "tierCounts": {
@@ -11,14 +11,14 @@
   "streak": 0,
   "bestStreak": 0,
   "sDaysLast7": 0,
-  "avg7": 6,
+  "avg7": 6.4,
   "improvement": null,
   "scoreDist": [
     0,
     0,
+    0,
+    0,
     1,
-    0,
-    0,
     1,
     0,
     1,
@@ -36,9 +36,9 @@
   ],
   "areaAvgs": [
     80,
-    30,
+    40,
     60,
-    60,
+    70,
     70,
     80
   ],
@@ -63,8 +63,8 @@
     },
     {
       "prop": "🏋️ Training — Output Over Comfort",
-      "rate": 20,
-      "done": 1
+      "rate": 40,
+      "done": 2
     },
     {
       "prop": "🚫 Sovereign Morning — Zero Inputs Before Outputs",
@@ -98,8 +98,8 @@
     },
     {
       "prop": "✍️ Reflection — AM Intention + PM Review",
-      "rate": 80,
-      "done": 4
+      "rate": 100,
+      "done": 5
     }
   ]
 }
