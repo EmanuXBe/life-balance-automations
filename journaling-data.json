@@ -1,27 +1,27 @@
 {
-  "updatedAt": "2026-05-04T09:10:26.291Z",
-  "totalEntries": 4,
-  "totalWords": 502,
-  "avgWordsPerEntry": 126,
+  "updatedAt": "2026-05-04T11:15:38.267Z",
+  "totalEntries": 5,
+  "totalWords": 572,
+  "avgWordsPerEntry": 114,
   "wordFrequency": [
     {
       "word": "exam",
-      "count": 7
+      "count": 8
     },
     {
       "word": "grateful",
-      "count": 6
+      "count": 7
     },
     {
       "word": "computation",
+      "count": 7
+    },
+    {
+      "word": "movil",
       "count": 6
     },
     {
       "word": "life",
-      "count": 5
-    },
-    {
-      "word": "movil",
       "count": 5
     },
     {
@@ -33,11 +33,27 @@
       "count": 4
     },
     {
+      "word": "complete",
+      "count": 4
+    },
+    {
+      "word": "new",
+      "count": 4
+    },
+    {
+      "word": "start",
+      "count": 4
+    },
+    {
       "word": "review",
       "count": 3
     },
     {
       "word": "dont",
+      "count": 3
+    },
+    {
+      "word": "first",
       "count": 3
     },
     {
@@ -54,18 +70,6 @@
     },
     {
       "word": "family",
-      "count": 3
-    },
-    {
-      "word": "complete",
-      "count": 3
-    },
-    {
-      "word": "new",
-      "count": 3
-    },
-    {
-      "word": "start",
       "count": 3
     },
     {
@@ -94,10 +98,6 @@
     },
     {
       "word": "move",
-      "count": 2
-    },
-    {
-      "word": "first",
       "count": 2
     },
     {
@@ -145,6 +145,10 @@
       "count": 2
     },
     {
+      "word": "rest",
+      "count": 2
+    },
+    {
       "word": "friends",
       "count": 2
     },
@@ -173,6 +177,10 @@
       "count": 2
     },
     {
+      "word": "wake",
+      "count": 2
+    },
+    {
       "word": "balance",
       "count": 2
     },
@@ -190,6 +198,14 @@
     },
     {
       "word": "later",
+      "count": 2
+    },
+    {
+      "word": "perfect",
+      "count": 2
+    },
+    {
+      "word": "interview",
       "count": 2
     },
     {
@@ -387,22 +403,6 @@
     {
       "word": "mind",
       "count": 1
-    },
-    {
-      "word": "getting",
-      "count": 1
-    },
-    {
-      "word": "closer",
-      "count": 1
-    },
-    {
-      "word": "rest",
-      "count": 1
-    },
-    {
-      "word": "opportunities",
-      "count": 1
     }
   ],
   "wordsByDate": [
@@ -421,6 +421,10 @@
     {
       "date": "2026-05-03",
       "count": 187
+    },
+    {
+      "date": "2026-05-04",
+      "count": 70
     }
   ],
   "heatmapData": [
@@ -439,19 +443,28 @@
     {
       "date": "2026-05-03",
       "count": 187
+    },
+    {
+      "date": "2026-05-04",
+      "count": 70
     }
   ],
   "sectionBalance": {
     "am": {
-      "words": 256,
-      "pct": 98
+      "words": 289,
+      "pct": 99
     },
     "pm": {
       "words": 4,
-      "pct": 2
+      "pct": 1
     }
   },
   "recentEntries": [
+    {
+      "date": "2026-05-04",
+      "wordCount": 70,
+      "excerpt": "1. Can wake up early and start this new sprint. 2. Can complete past week with no all perfect but improving. 3. I’m grateful for have a whole room to rest, joy with good benefits and have all near for me. Movil Computation Exam and Preparation for Salesforce Interview Procrastination, laziness I need to be a founder, working on my projects and studying for a first job final interview tomorrow."
+    },
     {
       "date": "2026-05-03",
       "wordCount": 187,
@@ -461,11 +474,6 @@
       "date": "2026-05-02",
       "wordCount": 121,
       "excerpt": "1. I’m grateful with Lord mercy, for him presence. 2. I’m grateful for my friends and family 3. I’m grateful for finish a hard week I didn’t complete this in the morning Fast dopamine I didn’t complete this in the morning 1. I bought my iPhone 17 2. I went to my church 3. I met with my partners and I went forward on trusted, I deployed civora landing page Lust, and bad habits, discipline and constancy, and making hard tasks is a friction that don’t let me do it, just thinking on it. Wake up earlier, shower with cold water, run with my pet, go to gym, send movil computation exam, read a book on..."
-    },
-    {
-      "date": "2026-05-01",
-      "wordCount": 51,
-      "excerpt": "1. Lord is changing my mind, hi is getting me closer. 2. Today I can take a rest, and be grateful for my life. 3. My university, my opportunities, my friends. Pray and resume with my spiritual life. Scrolling, social media, bad planning. I need to make the movil computation parcial."
     }
   ],
   "aiInsight": "This month you're strengthening your execution discipline but need to give more attention to your strategic thinking. — mornings are strong but evenings need more reflection."
