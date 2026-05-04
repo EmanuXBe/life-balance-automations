@@ -1,27 +1,35 @@
 {
-  "updatedAt": "2026-05-04T00:00:37.472Z",
+  "updatedAt": "2026-05-04T04:05:18.031Z",
   "totalEntries": 4,
-  "totalWords": 399,
-  "avgWordsPerEntry": 100,
+  "totalWords": 502,
+  "avgWordsPerEntry": 126,
   "wordFrequency": [
+    {
+      "word": "exam",
+      "count": 7
+    },
     {
       "word": "grateful",
       "count": 6
     },
     {
+      "word": "computation",
+      "count": 6
+    },
+    {
       "word": "life",
-      "count": 4
+      "count": 5
     },
     {
       "word": "movil",
-      "count": 4
+      "count": 5
     },
     {
-      "word": "computation",
-      "count": 4
+      "word": "ive",
+      "count": 5
     },
     {
-      "word": "exam",
+      "word": "things",
       "count": 4
     },
     {
@@ -29,11 +37,11 @@
       "count": 3
     },
     {
-      "word": "things",
+      "word": "dont",
       "count": 3
     },
     {
-      "word": "dont",
+      "word": "cant",
       "count": 3
     },
     {
@@ -45,7 +53,19 @@
       "count": 3
     },
     {
+      "word": "family",
+      "count": 3
+    },
+    {
+      "word": "complete",
+      "count": 3
+    },
+    {
       "word": "new",
+      "count": 3
+    },
+    {
+      "word": "start",
       "count": 3
     },
     {
@@ -73,6 +93,14 @@
       "count": 2
     },
     {
+      "word": "move",
+      "count": 2
+    },
+    {
+      "word": "first",
+      "count": 2
+    },
+    {
       "word": "everything",
       "count": 2
     },
@@ -85,11 +113,19 @@
       "count": 2
     },
     {
+      "word": "focused",
+      "count": 2
+    },
+    {
       "word": "civora",
       "count": 2
     },
     {
       "word": "making",
+      "count": 2
+    },
+    {
+      "word": "notion",
       "count": 2
     },
     {
@@ -117,15 +153,43 @@
       "count": 2
     },
     {
+      "word": "finish",
+      "count": 2
+    },
+    {
       "word": "hard",
       "count": 2
     },
     {
-      "word": "complete",
+      "word": "went",
       "count": 2
     },
     {
-      "word": "went",
+      "word": "forward",
+      "count": 2
+    },
+    {
+      "word": "friction",
+      "count": 2
+    },
+    {
+      "word": "balance",
+      "count": 2
+    },
+    {
+      "word": "achieve",
+      "count": 2
+    },
+    {
+      "word": "grandma",
+      "count": 2
+    },
+    {
+      "word": "really",
+      "count": 2
+    },
+    {
+      "word": "later",
       "count": 2
     },
     {
@@ -193,10 +257,6 @@
       "count": 1
     },
     {
-      "word": "move",
-      "count": 1
-    },
-    {
       "word": "needle",
       "count": 1
     },
@@ -206,10 +266,6 @@
     },
     {
       "word": "execute",
-      "count": 1
-    },
-    {
-      "word": "first",
       "count": 1
     },
     {
@@ -237,10 +293,6 @@
       "count": 1
     },
     {
-      "word": "focused",
-      "count": 1
-    },
-    {
       "word": "ruthless",
       "count": 1
     },
@@ -262,14 +314,6 @@
     },
     {
       "word": "jairo",
-      "count": 1
-    },
-    {
-      "word": "notion",
-      "count": 1
-    },
-    {
-      "word": "cant",
       "count": 1
     },
     {
@@ -359,50 +403,6 @@
     {
       "word": "opportunities",
       "count": 1
-    },
-    {
-      "word": "pray",
-      "count": 1
-    },
-    {
-      "word": "resume",
-      "count": 1
-    },
-    {
-      "word": "spiritual",
-      "count": 1
-    },
-    {
-      "word": "scrolling",
-      "count": 1
-    },
-    {
-      "word": "social",
-      "count": 1
-    },
-    {
-      "word": "media",
-      "count": 1
-    },
-    {
-      "word": "planning",
-      "count": 1
-    },
-    {
-      "word": "mercy",
-      "count": 1
-    },
-    {
-      "word": "presence",
-      "count": 1
-    },
-    {
-      "word": "family",
-      "count": 1
-    },
-    {
-      "word": "finish",
-      "count": 1
     }
   ],
   "wordsByDate": [
@@ -420,7 +420,7 @@
     },
     {
       "date": "2026-05-03",
-      "count": 84
+      "count": 187
     }
   ],
   "heatmapData": [
@@ -438,12 +438,12 @@
     },
     {
       "date": "2026-05-03",
-      "count": 84
+      "count": 187
     }
   ],
   "sectionBalance": {
     "am": {
-      "words": 200,
+      "words": 256,
       "pct": 98
     },
     "pm": {
@@ -454,8 +454,8 @@
   "recentEntries": [
     {
       "date": "2026-05-03",
-      "wordCount": 84,
-      "excerpt": "1. I’m grateful by the thinks I’ve done, like upgrades on this life balance system. 2. I’m grateful for having a new day, and can hear and learn new things about personal development. 3. I’m glad with Lord by forgiving me my sins, and giving me a new month to continue my purposes. Make movil computation exam All things, I’m just searching everything else to procrastinate and don’t make my exam. I need to be a focussed student today, to achieve the best grade."
+      "wordCount": 187,
+      "excerpt": "1. I’m grateful by the thinks I’ve done, like upgrades on this life balance system. 2. I’m grateful for having a new day, and can hear and learn new things about personal development. 3. I’m glad with Lord by forgiving me my sins, and giving me a new month to continue my purposes. Make movil computation exam All things, I’m just searching everything else to procrastinate and don’t make my exam. I need to be a focussed student today, to achieve the best grade. 1. I've enjoy with my family and my grandma birthday 2. I've got forward on notion life balance automatation, I completed this. 3. I've..."
     },
     {
       "date": "2026-05-02",
@@ -468,5 +468,5 @@
       "excerpt": "1. Lord is changing my mind, hi is getting me closer. 2. Today I can take a rest, and be grateful for my life. 3. My university, my opportunities, my friends. Pray and resume with my spiritual life. Scrolling, social media, bad planning. I need to make the movil computation parcial."
     }
   ],
-  "aiInsight": "This month you're strengthening your spiritual clarity but need to give more attention to your strategic thinking. — mornings are strong but evenings need more reflection."
+  "aiInsight": "This month you're strengthening your execution discipline but need to give more attention to your strategic thinking. — mornings are strong but evenings need more reflection."
 }
