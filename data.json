@@ -1,17 +1,17 @@
 {
-  "updatedAt": "2026-05-04T00:11:18.606Z",
+  "updatedAt": "2026-05-04T04:08:12.049Z",
   "daysLogged": 4,
   "perfectDays": 0,
   "tierCounts": {
     "S": 0,
-    "A": 1,
-    "B": 2,
+    "A": 2,
+    "B": 1,
     "C": 1
   },
   "streak": 0,
   "bestStreak": 0,
   "sDaysLast7": 0,
-  "avg7": 6.5,
+  "avg7": 7,
   "improvement": null,
   "scoreDist": [
     0,
@@ -20,9 +20,9 @@
     0,
     0,
     1,
+    0,
     1,
-    1,
-    1,
+    2,
     0,
     0
   ],
@@ -35,8 +35,8 @@
     "Leadership"
   ],
   "areaAvgs": [
-    75,
-    13,
+    100,
+    25,
     75,
     63,
     88,
@@ -53,13 +53,13 @@
   "habitRates": [
     {
       "prop": "⛪ Prayer — Full Surrender",
-      "rate": 75,
-      "done": 3
+      "rate": 100,
+      "done": 4
     },
     {
       "prop": "😴 Sleep Protocol — 9:30PM / 4:30AM",
-      "rate": 0,
-      "done": 0
+      "rate": 25,
+      "done": 1
     },
     {
       "prop": "🏋️ Training — Output Over Comfort",
