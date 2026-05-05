@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-05-05T12:51:19.338Z",
+  "updatedAt": "2026-05-05T16:23:00.076Z",
   "totalEntries": 6,
-  "totalWords": 623,
-  "avgWordsPerEntry": 104,
+  "totalWords": 666,
+  "avgWordsPerEntry": 111,
   "wordFrequency": [
     {
       "word": "exam",
@@ -17,15 +17,23 @@
       "count": 7
     },
     {
+      "word": "life",
+      "count": 6
+    },
+    {
       "word": "movil",
       "count": 6
     },
     {
-      "word": "life",
+      "word": "ive",
       "count": 5
     },
     {
-      "word": "ive",
+      "word": "new",
+      "count": 5
+    },
+    {
+      "word": "start",
       "count": 5
     },
     {
@@ -37,15 +45,23 @@
       "count": 4
     },
     {
+      "word": "friends",
+      "count": 4
+    },
+    {
       "word": "complete",
       "count": 4
     },
     {
-      "word": "new",
+      "word": "best",
       "count": 4
     },
     {
-      "word": "start",
+      "word": "salesforce",
+      "count": 4
+    },
+    {
+      "word": "interview",
       "count": 4
     },
     {
@@ -73,10 +89,6 @@
       "count": 3
     },
     {
-      "word": "friends",
-      "count": 3
-    },
-    {
       "word": "family",
       "count": 3
     },
@@ -86,10 +98,6 @@
     },
     {
       "word": "achieve",
-      "count": 3
-    },
-    {
-      "word": "interview",
       "count": 3
     },
     {
@@ -133,6 +141,10 @@
       "count": 2
     },
     {
+      "word": "work",
+      "count": 2
+    },
+    {
       "word": "civora",
       "count": 2
     },
@@ -170,6 +182,14 @@
     },
     {
       "word": "rest",
+      "count": 2
+    },
+    {
+      "word": "social",
+      "count": 2
+    },
+    {
+      "word": "media",
       "count": 2
     },
     {
@@ -233,7 +253,7 @@
       "count": 2
     },
     {
-      "word": "salesforce",
+      "word": "laziness",
       "count": 2
     },
     {
@@ -341,10 +361,6 @@
       "count": 1
     },
     {
-      "word": "work",
-      "count": 1
-    },
-    {
       "word": "ruthless",
       "count": 1
     },
@@ -387,22 +403,6 @@
     {
       "word": "management",
       "count": 1
-    },
-    {
-      "word": "focus",
-      "count": 1
-    },
-    {
-      "word": "drink",
-      "count": 1
-    },
-    {
-      "word": "cup",
-      "count": 1
-    },
-    {
-      "word": "alcohol",
-      "count": 1
     }
   ],
   "wordsByDate": [
@@ -427,8 +427,8 @@
       "count": 121
     },
     {
-      "date": null,
-      "count": 0
+      "date": "2026-05-05",
+      "count": 43
     }
   ],
   "heatmapData": [
@@ -453,13 +453,13 @@
       "count": 121
     },
     {
-      "date": null,
-      "count": 0
+      "date": "2026-05-05",
+      "count": 43
     }
   ],
   "sectionBalance": {
     "am": {
-      "words": 313,
+      "words": 336,
       "pct": 99
     },
     "pm": {
@@ -469,6 +469,11 @@
   },
   "recentEntries": [
     {
+      "date": "2026-05-05",
+      "wordCount": 43,
+      "excerpt": "1. Opportunity to start to work in salesforce 2. Friends and contacts God give me 3. A new day in my life Best Salesforce Interview Social media, laziness Today I need be the best worker, the best seller, charismatic with disciplina and efficiency."
+    },
+    {
       "date": "2026-05-04",
       "wordCount": 121,
       "excerpt": "1. Can wake up early and start this new sprint. 2. Can complete past week with no all perfect but improving. 3. I’m grateful for have a whole room to rest, joy with good benefits and have all near for me. Movil Computation Exam and Preparation for Salesforce Interview Procrastination, laziness I need to be a founder, working on my projects and studying for a first job final interview tomorrow. 1. Go to gym 2. Send a message to Pastor Lau 3. Finish job and exams Time, and daily distractions, I can't be focused when I'm working in a project in a class or talking with friends at the same time. Im..."
@@ -477,11 +482,6 @@
       "date": "2026-05-03",
       "wordCount": 187,
       "excerpt": "1. I’m grateful by the thinks I’ve done, like upgrades on this life balance system. 2. I’m grateful for having a new day, and can hear and learn new things about personal development. 3. I’m glad with Lord by forgiving me my sins, and giving me a new month to continue my purposes. Make movil computation exam All things, I’m just searching everything else to procrastinate and don’t make my exam. I need to be a focussed student today, to achieve the best grade. 1. I've enjoy with my family and my grandma birthday 2. I've got forward on notion life balance automatation, I completed this. 3. I've..."
-    },
-    {
-      "date": "2026-05-02",
-      "wordCount": 121,
-      "excerpt": "1. I’m grateful with Lord mercy, for him presence. 2. I’m grateful for my friends and family 3. I’m grateful for finish a hard week I didn’t complete this in the morning Fast dopamine I didn’t complete this in the morning 1. I bought my iPhone 17 2. I went to my church 3. I met with my partners and I went forward on trusted, I deployed civora landing page Lust, and bad habits, discipline and constancy, and making hard tasks is a friction that don’t let me do it, just thinking on it. Wake up earlier, shower with cold water, run with my pet, go to gym, send movil computation exam, read a book on..."
     }
   ],
   "aiInsight": "This month you're strengthening your execution discipline but need to give more attention to your strategic thinking. — mornings are strong but evenings need more reflection."
