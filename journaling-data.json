@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-05-05T00:13:19.558Z",
+  "updatedAt": "2026-05-05T03:49:37.847Z",
   "totalEntries": 6,
-  "totalWords": 572,
-  "avgWordsPerEntry": 95,
+  "totalWords": 623,
+  "avgWordsPerEntry": 104,
   "wordFrequency": [
     {
       "word": "exam",
@@ -33,6 +33,10 @@
       "count": 4
     },
     {
+      "word": "cant",
+      "count": 4
+    },
+    {
       "word": "complete",
       "count": 4
     },
@@ -57,7 +61,7 @@
       "count": 3
     },
     {
-      "word": "cant",
+      "word": "focused",
       "count": 3
     },
     {
@@ -69,7 +73,23 @@
       "count": 3
     },
     {
+      "word": "friends",
+      "count": 3
+    },
+    {
       "word": "family",
+      "count": 3
+    },
+    {
+      "word": "finish",
+      "count": 3
+    },
+    {
+      "word": "achieve",
+      "count": 3
+    },
+    {
+      "word": "interview",
       "count": 3
     },
     {
@@ -113,10 +133,6 @@
       "count": 2
     },
     {
-      "word": "focused",
-      "count": 2
-    },
-    {
       "word": "civora",
       "count": 2
     },
@@ -133,11 +149,19 @@
       "count": 2
     },
     {
+      "word": "improve",
+      "count": 2
+    },
+    {
       "word": "computación",
       "count": 2
     },
     {
       "word": "video",
+      "count": 2
+    },
+    {
+      "word": "plan",
       "count": 2
     },
     {
@@ -149,15 +173,7 @@
       "count": 2
     },
     {
-      "word": "friends",
-      "count": 2
-    },
-    {
       "word": "bad",
-      "count": 2
-    },
-    {
-      "word": "finish",
       "count": 2
     },
     {
@@ -181,11 +197,15 @@
       "count": 2
     },
     {
-      "word": "balance",
+      "word": "gym",
       "count": 2
     },
     {
-      "word": "achieve",
+      "word": "send",
+      "count": 2
+    },
+    {
+      "word": "balance",
       "count": 2
     },
     {
@@ -201,11 +221,27 @@
       "count": 2
     },
     {
+      "word": "distractions",
+      "count": 2
+    },
+    {
       "word": "perfect",
       "count": 2
     },
     {
-      "word": "interview",
+      "word": "preparation",
+      "count": 2
+    },
+    {
+      "word": "salesforce",
+      "count": 2
+    },
+    {
+      "word": "working",
+      "count": 2
+    },
+    {
+      "word": "job",
       "count": 2
     },
     {
@@ -349,10 +385,6 @@
       "count": 1
     },
     {
-      "word": "improve",
-      "count": 1
-    },
-    {
       "word": "management",
       "count": 1
     },
@@ -370,38 +402,6 @@
     },
     {
       "word": "alcohol",
-      "count": 1
-    },
-    {
-      "word": "enough",
-      "count": 1
-    },
-    {
-      "word": "neither",
-      "count": 1
-    },
-    {
-      "word": "plan",
-      "count": 1
-    },
-    {
-      "word": "better",
-      "count": 1
-    },
-    {
-      "word": "efficient",
-      "count": 1
-    },
-    {
-      "word": "móvil",
-      "count": 1
-    },
-    {
-      "word": "changing",
-      "count": 1
-    },
-    {
-      "word": "mind",
       "count": 1
     }
   ],
@@ -424,7 +424,7 @@
     },
     {
       "date": "2026-05-04",
-      "count": 70
+      "count": 121
     },
     {
       "date": null,
@@ -450,7 +450,7 @@
     },
     {
       "date": "2026-05-04",
-      "count": 70
+      "count": 121
     },
     {
       "date": null,
@@ -459,7 +459,7 @@
   ],
   "sectionBalance": {
     "am": {
-      "words": 289,
+      "words": 313,
       "pct": 99
     },
     "pm": {
@@ -470,8 +470,8 @@
   "recentEntries": [
     {
       "date": "2026-05-04",
-      "wordCount": 70,
-      "excerpt": "1. Can wake up early and start this new sprint. 2. Can complete past week with no all perfect but improving. 3. I’m grateful for have a whole room to rest, joy with good benefits and have all near for me. Movil Computation Exam and Preparation for Salesforce Interview Procrastination, laziness I need to be a founder, working on my projects and studying for a first job final interview tomorrow."
+      "wordCount": 121,
+      "excerpt": "1. Can wake up early and start this new sprint. 2. Can complete past week with no all perfect but improving. 3. I’m grateful for have a whole room to rest, joy with good benefits and have all near for me. Movil Computation Exam and Preparation for Salesforce Interview Procrastination, laziness I need to be a founder, working on my projects and studying for a first job final interview tomorrow. 1. Go to gym 2. Send a message to Pastor Lau 3. Finish job and exams Time, and daily distractions, I can't be focused when I'm working in a project in a class or talking with friends at the same time. Im..."
     },
     {
       "date": "2026-05-03",
