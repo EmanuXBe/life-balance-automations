@@ -1,17 +1,17 @@
 {
-  "updatedAt": "2026-05-05T01:17:56.616Z",
+  "updatedAt": "2026-05-05T04:36:51.409Z",
   "daysLogged": 5,
-  "perfectDays": 0,
+  "perfectDays": 1,
   "tierCounts": {
-    "S": 0,
+    "S": 1,
     "A": 2,
     "B": 1,
-    "C": 2
+    "C": 1
   },
-  "streak": 0,
-  "bestStreak": 0,
-  "sDaysLast7": 0,
-  "avg7": 6.6,
+  "streak": 1,
+  "bestStreak": 1,
+  "sDaysLast7": 1,
+  "avg7": 7.6,
   "improvement": null,
   "scoreDist": [
     0,
@@ -19,12 +19,12 @@
     0,
     0,
     0,
-    2,
+    1,
     0,
     1,
     2,
     0,
-    0
+    1
   ],
   "areaLabels": [
     "Spiritual",
@@ -37,10 +37,10 @@
   "areaAvgs": [
     100,
     40,
-    60,
+    80,
     70,
-    70,
-    80
+    90,
+    100
   ],
   "areaTrends": [
     0,
@@ -73,28 +73,28 @@
     },
     {
       "prop": "📚 Reading — 1 Insight Captured",
-      "rate": 40,
-      "done": 2
-    },
-    {
-      "prop": "💻 Deep Work — #1 Deliverable Advanced",
-      "rate": 80,
-      "done": 4
-    },
-    {
-      "prop": "🎯 Traction Move — Civora / Prediu",
       "rate": 60,
       "done": 3
     },
     {
-      "prop": "🗓️ Tomorrow Locked — #1 Priority Clear",
+      "prop": "💻 Deep Work — #1 Deliverable Advanced",
+      "rate": 100,
+      "done": 5
+    },
+    {
+      "prop": "🎯 Traction Move — Civora / Prediu",
       "rate": 80,
       "done": 4
     },
     {
+      "prop": "🗓️ Tomorrow Locked — #1 Priority Clear",
+      "rate": 100,
+      "done": 5
+    },
+    {
       "prop": "🤝 Relationship Capital — 1 Person Invested",
-      "rate": 80,
-      "done": 4
+      "rate": 100,
+      "done": 5
     },
     {
       "prop": "✍️ Reflection — AM Intention + PM Review",
