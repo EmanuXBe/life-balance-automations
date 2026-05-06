@@ -1,22 +1,22 @@
 {
-  "updatedAt": "2026-05-06T02:34:02.944Z",
+  "updatedAt": "2026-05-06T02:39:56.765Z",
   "daysLogged": 6,
-  "perfectDays": 1,
+  "perfectDays": 2,
   "tierCounts": {
-    "S": 1,
+    "S": 2,
     "A": 2,
     "B": 1,
-    "C": 2
+    "C": 1
   },
-  "streak": 0,
-  "bestStreak": 1,
-  "sDaysLast7": 1,
-  "avg7": 6.7,
+  "streak": 2,
+  "bestStreak": 2,
+  "sDaysLast7": 2,
+  "avg7": 8,
   "improvement": null,
   "scoreDist": [
     0,
     0,
-    1,
+    0,
     0,
     0,
     1,
@@ -24,7 +24,7 @@
     1,
     2,
     0,
-    1
+    2
   ],
   "areaLabels": [
     "Spiritual",
@@ -35,12 +35,12 @@
     "Leadership"
   ],
   "areaAvgs": [
+    100,
+    50,
     83,
-    33,
-    67,
     75,
-    75,
-    83
+    92,
+    100
   ],
   "areaTrends": [
     0,
@@ -53,18 +53,18 @@
   "habitRates": [
     {
       "prop": "⛪ Prayer — Full Surrender",
-      "rate": 83,
-      "done": 5
+      "rate": 100,
+      "done": 6
     },
     {
       "prop": "😴 Sleep Protocol — 9:30PM / 4:30AM",
-      "rate": 33,
-      "done": 2
+      "rate": 50,
+      "done": 3
     },
     {
       "prop": "🏋️ Training — Output Over Comfort",
-      "rate": 33,
-      "done": 2
+      "rate": 50,
+      "done": 3
     },
     {
       "prop": "🚫 Sovereign Morning — Zero Inputs Before Outputs",
@@ -73,28 +73,28 @@
     },
     {
       "prop": "📚 Reading — 1 Insight Captured",
-      "rate": 50,
-      "done": 3
-    },
-    {
-      "prop": "💻 Deep Work — #1 Deliverable Advanced",
-      "rate": 83,
-      "done": 5
-    },
-    {
-      "prop": "🎯 Traction Move — Civora / Prediu",
       "rate": 67,
       "done": 4
     },
     {
-      "prop": "🗓️ Tomorrow Locked — #1 Priority Clear",
+      "prop": "💻 Deep Work — #1 Deliverable Advanced",
+      "rate": 100,
+      "done": 6
+    },
+    {
+      "prop": "🎯 Traction Move — Civora / Prediu",
       "rate": 83,
       "done": 5
     },
     {
+      "prop": "🗓️ Tomorrow Locked — #1 Priority Clear",
+      "rate": 100,
+      "done": 6
+    },
+    {
       "prop": "🤝 Relationship Capital — 1 Person Invested",
-      "rate": 83,
-      "done": 5
+      "rate": 100,
+      "done": 6
     },
     {
       "prop": "✍️ Reflection — AM Intention + PM Review",
