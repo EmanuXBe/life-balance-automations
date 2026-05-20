@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-20T12:16:12.313Z",
+  "updatedAt": "2026-05-20T16:03:57.951Z",
   "daysLogged": 7,
   "perfectDays": 2,
   "tierCounts": {
@@ -11,13 +11,13 @@
   "streak": 0,
   "bestStreak": 2,
   "sDaysLast7": 2,
-  "avg7": 6.9,
+  "avg7": 7.3,
   "improvement": null,
   "scoreDist": [
+    0,
+    0,
+    0,
     1,
-    0,
-    0,
-    0,
     0,
     1,
     0,
@@ -35,10 +35,10 @@
     "Leadership"
   ],
   "areaAvgs": [
-    86,
+    100,
     43,
     71,
-    64,
+    79,
     79,
     86
   ],
@@ -53,8 +53,8 @@
   "habitRates": [
     {
       "prop": "⛪ Prayer — Full Surrender",
-      "rate": 86,
-      "done": 6
+      "rate": 100,
+      "done": 7
     },
     {
       "prop": "😴 Sleep Protocol — 9:30PM / 4:30AM",
@@ -68,8 +68,8 @@
     },
     {
       "prop": "🚫 Sovereign Morning — Zero Inputs Before Outputs",
-      "rate": 43,
-      "done": 3
+      "rate": 57,
+      "done": 4
     },
     {
       "prop": "📚 Reading — 1 Insight Captured",
@@ -98,8 +98,8 @@
     },
     {
       "prop": "✍️ Reflection — AM Intention + PM Review",
-      "rate": 86,
-      "done": 6
+      "rate": 100,
+      "done": 7
     }
   ]
 }
