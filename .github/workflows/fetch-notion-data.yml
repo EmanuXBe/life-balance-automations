@@ -43,8 +43,14 @@ jobs:
           git commit -m "chore: update dashboard data [skip ci]"
           for attempt in 1 2 3 4 5; do
             git push && { echo "Pushed on attempt $attempt."; exit 0; }
-            echo "Push $attempt rejected — rebasing onto latest main and retrying…"
-            git pull --rebase --autostash origin main || true
-            sleep $((attempt * 5))
+            echo "Push $attempt rejected — replaying our change onto latest main…"
+            git rebase --abort 2>/dev/null || true
+            git fetch origin main
+            git checkout origin/main -- . ':(exclude)data.enc.json' 2>/dev/null || true
+            git reset --soft origin/main
+            git add -A
+            git diff --cached --quiet && { echo "Nothing left to push."; exit 0; }
+            git commit -m "chore: update dashboard data [skip ci]"
+            sleep $((attempt * 4))
           done
-          echo "::error::Could not push data.json after 5 attempts."; exit 1
+          echo "::error::Could not push data.enc.json after 5 attempts."; exit 1
