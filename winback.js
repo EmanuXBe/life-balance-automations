@@ -127,13 +127,27 @@ async function gemini(prompt, attempt = 1) {
   return parts.filter((p) => !p.thought).map((p) => p.text).join('').trim();
 }
 
+// The coaching method below is drawn from Jairo Palacios, "Neuro-marketing y
+// Branding para nuevos emprendedores" (P. U. Javeriana) — applied to self-
+// motivation instead of selling.
 function buildPrompt({ daysInactive, habits, journal }) {
   const j = journal.map((e) => `[${e.date}] "${e.excerpt}"`).join('\n') || '(no recent journal entries on record)';
   const best = habits?.bestStreak ?? 0;
   const sDays = habits?.perfectDays ?? 0;
   const avg = habits?.avg7 ?? 0;
   return [
-    `You are this person's Founder & CEO coach — the voice they hired to hold their standard when motivation fails. Faith-driven, direct, warm but with an edge. You are writing a short email because they have gone quiet on their own system.`,
+    `You are this founder's personal Founder & CEO coach — the voice they hired to hold their standard when motivation fails. Faith-driven, direct, warm, with fire. You are writing a short re-engagement email because they have gone quiet on their own system, "The Daily 10".`,
+    ``,
+    `HOW THE BRAIN YOU ARE WRITING TO ACTUALLY WORKS (apply every point):`,
+    `- ~95% of decisions are emotional and subconscious; the rational mind only justifies afterward. Lead with emotion and identity, not data.`,
+    `- Dopamine rewards ANTICIPATION and small wins. Make the person they are becoming vivid, and make the single action feel like a win they collect tonight.`,
+    `- Primacy & recency: the first sentence and the last sentence are what they remember. Both must land.`,
+    `- Story beats facts. Use THEIR own words and history as the story — quote their journal.`,
+    `- Real scarcity, never fake: drift genuinely compounds. Name the true cost of another week lost — without shame.`,
+    `- Anchoring: anchor against their best self (their perfect days, their best streak) so one checkbox tonight feels small by comparison.`,
+    `- Commitment & identity: they told their team they would restart. Hold them to the person they said they would be.`,
+    `- Less friction = decision. Give exactly ONE action, never a list.`,
+    `- Never restate raw numbers — they see the dashboard. Make them FEEL resolve and hope; the behaviour follows the feeling.`,
     ``,
     `SITUATION`,
     `- Days since their last logged day: ${daysInactive}`,
@@ -143,34 +157,81 @@ function buildPrompt({ daysInactive, habits, journal }) {
     `THEIR LAST JOURNAL ENTRIES`,
     j,
     ``,
-    `WRITE THE EMAIL`,
-    `- Line 1 must be exactly: SUBJECT: <6-9 word subject line, direct, no clickbait, no emoji>`,
-    `- Then one blank line, then the body: 110-170 words, exactly 2 short paragraphs.`,
-    `- Paragraph 1: name what is really happening (they drifted — that is human) and tie it to something concrete from their journal: their own words, their own goals. No shame, no lecture.`,
-    `- Paragraph 2: give ONE specific tiny action for TODAY that re-opens the system (e.g. open the Daily 10 and check a single box tonight). Close with one sharp sentence that reminds them who they said they want to become.`,
-    `- Address them as "you". No greeting, no "Dear", no sign-off, no name. Plain text only — no markdown, no bullet points.`,
+    `OUTPUT — follow this exact structure and nothing else:`,
+    `SUBJECT_ES: <Spanish subject, 5-8 words, direct, motivating, no emoji, no clickbait>`,
+    `SUBJECT_EN: <English subject, 5-8 words, same spirit>`,
+    `===ES===`,
+    `<Spanish body: exactly 2 paragraphs, 80-130 words total. Paragraph 1: name what is really happening (they drifted — human, no shame) tied to something concrete from their journal, in their words. Paragraph 2: ONE tiny action for TODAY that reopens the system (e.g. "abre el Daily 10 y marca una sola casilla esta noche"), then one sharp closing line about who they said they would become.>`,
+    `===EN===`,
+    `<English body: same message, NOT a literal translation, same 2-paragraph structure and length.>`,
+    ``,
+    `No greeting, no "Dear", no sign-off, no name, no markdown, no bullet points.`,
   ].join('\n');
 }
 
-// ─── EMAIL FILE (consumed by curl in the workflow) ──────────────────────────
+// ─── EMAIL FILE (multipart/alternative, consumed by curl in the workflow) ────
+
+const HERO_IMG = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=70&auto=format&fit=crop';
 
 function rfc2822Date(d = new Date()) { return d.toUTCString().replace('GMT', '+0000'); }
 function encodeSubject(s) { return `=?UTF-8?B?${Buffer.from(s, 'utf8').toString('base64')}?=`; }
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const paras = (s) => String(s).split(/\n\s*\n+/).map((p) => p.trim().replace(/\s*\n\s*/g, ' ')).filter(Boolean);
 
-function buildEml({ from, to, subject, body }) {
-  const b = body.replace(/\r?\n/g, '\r\n').replace(/^\./, '..').replace(/\r\n\./g, '\r\n..');
+function htmlPart({ headline, bodyEs, bodyEn, daysInactive }) {
+  const pEs = paras(bodyEs).map((p) => `<p style="margin:0 0 14px;">${esc(p)}</p>`).join('');
+  const pEn = paras(bodyEn).map((p) => `<p style="margin:0 0 14px;">${esc(p)}</p>`).join('');
+  return `<div style="margin:0;padding:0;background:#0f1115;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0f1115;padding:24px 12px;"><tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#16181d;border-radius:14px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<tr><td><img src="${HERO_IMG}" width="600" alt="" style="display:block;width:100%;height:180px;object-fit:cover;"></td></tr>
+<tr><td style="padding:28px 30px 6px;">
+<div style="font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:#8a94a6;">Life Balance &middot; Founder Standard</div>
+<div style="font-size:22px;line-height:1.32;font-weight:700;color:#f2f4f8;margin-top:10px;">${esc(headline)}</div>
+</td></tr>
+<tr><td style="padding:14px 30px 2px;color:#c9d1de;font-size:15px;line-height:1.65;">${pEs}</td></tr>
+<tr><td style="padding:6px 30px 0;"><div style="height:1px;background:#262a31;"></div>
+<div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#8a94a6;margin-top:18px;">English</div></td></tr>
+<tr><td style="padding:6px 30px 2px;color:#aab3c0;font-size:14px;line-height:1.65;">${pEn}</td></tr>
+<tr><td style="padding:20px 30px 30px;"><div style="font-size:12px;color:#6b7484;">D&iacute;a ${daysInactive} sin registrar &middot; tu sistema sigue aqu&iacute;. Una casilla esta noche.</div></td></tr>
+</table></td></tr></table></div>`;
+}
+
+function textPart({ headline, bodyEs, bodyEn, daysInactive }) {
   return [
+    headline.toUpperCase(), '', bodyEs, '',
+    '— — — — — — — — — —', '',
+    bodyEn, '',
+    `Life Balance · Día ${daysInactive} sin registrar · una casilla esta noche.`,
+  ].join('\n');
+}
+
+function buildEml({ from, to, subject, headline, bodyEs, bodyEn, daysInactive }) {
+  const boundary = 'LB_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const raw = [
     `From: Life Balance Coach <${from}>`,
     `To: <${to}>`,
     `Subject: ${encodeSubject(subject)}`,
     `Date: ${rfc2822Date()}`,
     `MIME-Version: 1.0`,
+    `Content-Type: multipart/alternative; boundary="${boundary}"`,
+    ``,
+    `--${boundary}`,
     `Content-Type: text/plain; charset=utf-8`,
     `Content-Transfer-Encoding: 8bit`,
     ``,
-    b,
+    textPart({ headline, bodyEs, bodyEn, daysInactive }),
     ``,
-  ].join('\r\n');
+    `--${boundary}`,
+    `Content-Type: text/html; charset=utf-8`,
+    `Content-Transfer-Encoding: 8bit`,
+    ``,
+    htmlPart({ headline, bodyEs, bodyEn, daysInactive }),
+    ``,
+    `--${boundary}--`,
+    ``,
+  ].join('\n');
+  return raw.replace(/\r?\n/g, '\r\n').replace(/^\./gm, '..'); // CRLF + SMTP dot-stuffing
 }
 
 // ─── MAIN ────────────────────────────────────────────────────────────────────
@@ -201,13 +262,19 @@ function buildEml({ from, to, subject, body }) {
   const journal = await recentJournal(2);
   const raw = await gemini(buildPrompt({ daysInactive, habits, journal }));
 
-  const m = raw.match(/^\s*SUBJECT:\s*(.+?)\s*\n([\s\S]+)$/i);
-  const subject = (m ? m[1] : 'About that restart you mentioned').trim();
-  const body = (m ? m[2] : raw).trim();
-  const finalSubject = FORCE ? `[prueba] ${subject}` : subject;
+  const subjEs = (raw.match(/SUBJECT_ES:\s*(.+)/i)?.[1] || 'Tu sistema te está esperando').trim();
+  const subjEn = (raw.match(/SUBJECT_EN:\s*(.+)/i)?.[1] || 'Your system is waiting for you').trim();
+  const esBlock = (raw.split(/===\s*EN\s*===/i)[0].split(/===\s*ES\s*===/i)[1] || '').trim();
+  const enBlock = (raw.split(/===\s*EN\s*===/i)[1] || '').trim();
+  const bodyEs = esBlock || raw.trim();
+  const bodyEn = enBlock;
+  const subject = (FORCE ? '[prueba] ' : '') + subjEs;
 
-  fs.writeFileSync('email.eml', buildEml({ from: SMTP_USER, to: SMTP_USER, subject: finalSubject, body }));
-  console.log(`\n────────────────────────\nSubject: ${finalSubject}\n\n${body}\n────────────────────────\n`);
+  fs.writeFileSync('email.eml', buildEml({
+    from: SMTP_USER, to: SMTP_USER, subject,
+    headline: subjEs, bodyEs, bodyEn, daysInactive,
+  }));
+  console.log(`\n──────── ${subject} ────────\n[ES] ${subjEs}\n${bodyEs}\n\n[EN] ${subjEn}\n${bodyEn}\n────────\n`);
   setOutput('send', 'true');
 
   if (!FORCE) {
