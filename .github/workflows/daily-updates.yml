@@ -5,6 +5,10 @@ on:
     - cron: '0 9 * * *'   # 4:00 AM Bogotá (UTC-5)
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -35,5 +39,12 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add verse.json
-          git diff --cached --quiet || git commit -m "chore: update verse of the day [skip ci]"
-          git push
+          git diff --cached --quiet && { echo "No changes to commit."; exit 0; }
+          git commit -m "chore: update verse of the day [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            git push && { echo "Pushed on attempt $attempt."; exit 0; }
+            echo "Push $attempt rejected — rebasing onto latest main and retrying…"
+            git pull --rebase --autostash origin main || true
+            sleep $((attempt * 5))
+          done
+          echo "::error::Could not push verse.json after 5 attempts."; exit 1

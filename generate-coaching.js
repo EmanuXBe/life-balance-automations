@@ -50,22 +50,51 @@ function buildJournalContext(journalingData, todayDate = null) {
 
 // ─── GEMINI ───────────────────────────────────────────────────────────────────
 
-async function callGemini(prompt) {
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Gemini Flash regularly returns 429 (rate) / 503 ("high demand") for a few
+// seconds at a time. Those are transient — retry with backoff instead of
+// failing the whole workflow (which is what was emailing you).
+const MAX_ATTEMPTS = 5;
+const RETRY_STATUS = new Set([429, 500, 502, 503, 504]);
+
+async function callGemini(prompt, attempt = 1) {
   if (!GEMINI_KEY) throw new Error('Missing GEMINI_API_KEY secret — add it in GitHub repo Settings → Secrets');
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        maxOutputTokens: 350,
-        temperature: 0.7,
-        thinkingConfig: { thinkingBudget: 0 },
-      },
-    }),
-  });
-  if (!res.ok) throw new Error(`Gemini API error: ${await res.text()}`);
+
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          maxOutputTokens: 350,
+          temperature: 0.7,
+          thinkingConfig: { thinkingBudget: 0 },
+        },
+      }),
+    });
+  } catch (err) {
+    // Network-level failure (DNS, reset, timeout) — also transient.
+    if (attempt < MAX_ATTEMPTS) {
+      const wait = attempt * 15000;
+      console.warn(`Gemini request failed (${err.message}) — retry ${attempt}/${MAX_ATTEMPTS - 1} in ${wait / 1000}s`);
+      await sleep(wait);
+      return callGemini(prompt, attempt + 1);
+    }
+    throw err;
+  }
+
+  if (RETRY_STATUS.has(res.status) && attempt < MAX_ATTEMPTS) {
+    const wait = attempt * 15000;
+    console.warn(`Gemini ${res.status} — retry ${attempt}/${MAX_ATTEMPTS - 1} in ${wait / 1000}s`);
+    await sleep(wait);
+    return callGemini(prompt, attempt + 1);
+  }
+
+  if (!res.ok) throw new Error(`Gemini API error (${res.status}): ${await res.text()}`);
   const parts = (await res.json()).candidates?.[0]?.content?.parts || [];
   return parts.filter(p => !p.thought).map(p => p.text).join('').trim();
 }

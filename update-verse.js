@@ -23,37 +23,117 @@ function getDayOfYear() {
   return Math.floor((bogota - start) / 86400000) + 1;
 }
 
-// ─── SCRAPE YOUVERSION VOTD ───────────────────────────────────────────────────
+// ─── VERSE SOURCES ───────────────────────────────────────────────────────────
+// Primary  : OurManna JSON API — stable, key-free, returns the reference cleanly.
+// Fallback : scrape YouVersion (now serves a bot-challenge page to many IPs, and
+//            its <meta> tags no longer carry the reference — so we parse it out
+//            of the verse text ourselves).
+// Last     : the hard-coded FALLBACK rotation below.
 
-async function scrapeVOTD(url) {
+// A leading/trailing Bible reference: "Psalms 18:2", "1 John 4:4",
+// "Song of Songs 2:1", "2 Cor. 12:9-10".
+const BOOK = String.raw`(?:[1-3]\s)?(?:(?:[A-Z][a-zA-Z]+|of|the)\.?\s){0,3}[A-Z][a-zA-Z]+\.?`;
+const LEADING_REF_RE = new RegExp(`^\\s*(${BOOK}\\s\\d{1,3}:\\d{1,3}(?:[-–]\\d{1,3})?(?:,\\s?\\d{1,3})?)\\s+`);
+const TRAILING_REF_RE = new RegExp(`\\s+(${BOOK}\\s\\d{1,3}:\\d{1,3}(?:[-–]\\d{1,3})?(?:,\\s?\\d{1,3})?)\\s*$`);
+
+// Separate the reference from the verse text when they arrive glued together.
+function splitReference(text, fallbackTitle) {
+  const clean = (text || '').replace(/\r\n/g, '\n').replace(/[ \t]+/g, ' ').trim();
+
+  const lead = clean.match(LEADING_REF_RE);
+  if (lead && clean.slice(lead[0].length).trim().length > 10) {
+    return { text: clean.slice(lead[0].length).trim(), reference: lead[1].replace(/\s+/g, ' ').trim() };
+  }
+
+  const tail = clean.match(TRAILING_REF_RE);
+  if (tail && clean.slice(0, tail.index).trim().length > 10) {
+    return { text: clean.slice(0, tail.index).trim(), reference: tail[1].replace(/\s+/g, ' ').trim() };
+  }
+
+  // Only trust the scraped <title> if it actually looks like a reference.
+  if (fallbackTitle && /\d+:\d+/.test(fallbackTitle) && !/verse of the day|bible app/i.test(fallbackTitle)) {
+    return { text: clean, reference: fallbackTitle.replace(/\s*\(.*?\)\s*$/, '').trim() };
+  }
+
+  return { text: clean, reference: '' };
+}
+
+// ─── PRIMARY: OurManna JSON API ─────────────────────────────────────────────
+
+async function fetchOurManna() {
   try {
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; LifeBalanceDashboard/1.0)',
-        'Accept': 'text/html',
-      },
+    const res = await fetch('https://beta.ourmanna.com/api/v1/get/?format=json&order=daily', {
+      headers: { 'Accept': 'application/json' },
       signal: AbortSignal.timeout(10000),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const html = await res.text();
-
-    const getMeta = (prop) => {
-      const m = html.match(new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]+content=["']([^"']+)["']`, 'i'))
-        || html.match(new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']${prop}["']`, 'i'));
-      return m ? m[1].replace(/&amp;/g, '&').replace(/&#(\d+);/g, (_, n) => String.fromCharCode(n)).trim() : null;
+    const det = (await res.json())?.verse?.details;
+    if (!det?.text || !det?.reference) throw new Error('Malformed response');
+    console.log(`✅ OurManna: ${det.reference}`);
+    return {
+      text: det.text.replace(/\s+/g, ' ').trim(),
+      reference: det.reference.trim(),
+      version: det.version || 'NIV',
+      image: null,
+      source: 'ourmanna',
     };
-
-    const title = getMeta('og:title');
-    const description = getMeta('og:description');
-    const image = getMeta('og:image');
-
-    if (description && title) {
-      console.log(`✅ Scraped YouVersion: ${title}`);
-      return { text: description, reference: title, image, source: 'youversion' };
-    }
-    throw new Error('Missing og meta tags');
   } catch (err) {
-    console.warn(`Scraping failed (${err.message}), using fallback.`);
+    console.warn(`OurManna failed (${err.message}).`);
+    return null;
+  }
+}
+
+// ─── FALLBACK: SCRAPE YOUVERSION VOTD ───────────────────────────────────────
+
+function makeGetMeta(html) {
+  return (prop) => {
+    const m = html.match(new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]+content=(["'])([\\s\\S]*?)\\1`, 'i'))
+      || html.match(new RegExp(`<meta[^>]+content=(["'])([\\s\\S]*?)\\1[^>]+(?:property|name)=["']${prop}["']`, 'i'));
+    if (!m) return null;
+    return m[2]
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#0?39;|&apos;|&#x27;/gi, "'")
+      .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(n))
+      .replace(/\r\n/g, '\n')
+      .trim();
+  };
+}
+
+async function fetchYouVersionHtml(url) {
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml',
+      'Accept-Language': 'en-US,en;q=0.9',
+    },
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const html = await res.text();
+  if (!/og:description/i.test(html)) throw new Error('no og tags (bot challenge)');
+  return html;
+}
+
+async function scrapeVOTD(url) {
+  try {
+    const getMeta = makeGetMeta(await fetchYouVersionHtml(url));
+    const description = getMeta('og:description');
+    if (!description) throw new Error('Missing og:description');
+    const { text, reference } = splitReference(description, getMeta('og:title'));
+    console.log(`✅ Scraped YouVersion: ${reference || '(no reference found)'}`);
+    return { text, reference, version: 'NIV', image: getMeta('og:image'), source: 'youversion' };
+  } catch (err) {
+    console.warn(`YouVersion scrape failed (${err.message}).`);
+    return null;
+  }
+}
+
+// Best-effort: pull just the YouVersion card image to illustrate the verse.
+async function fetchYouVersionImage(url) {
+  try {
+    return makeGetMeta(await fetchYouVersionHtml(url))('og:image') || null;
+  } catch {
     return null;
   }
 }
@@ -123,7 +203,7 @@ async function updateCallout(verse) {
     },
     body: JSON.stringify({
       callout: {
-        rich_text: [{ type: 'text', text: { content: `${verse.text}  —  ${verse.reference}` } }],
+        rich_text: [{ type: 'text', text: { content: verse.reference ? `${verse.text}  —  ${verse.reference}` : verse.text } }],
         icon: { type: 'emoji', emoji: '📖' },
         color: 'blue_background',
       },
@@ -143,12 +223,16 @@ async function updateCallout(verse) {
   const votdUrl = `https://www.bible.com/verse-of-the-day?day=${day}`;
   console.log(`Day ${day} → ${votdUrl}`);
 
-  // 1. Scrape verse
-  let verse = await scrapeVOTD(votdUrl);
+  // 1. OurManna JSON API  →  2. YouVersion scrape  →  3. hard-coded rotation
+  let verse = await fetchOurManna();
+  if (!verse) verse = await scrapeVOTD(votdUrl);
   if (!verse) {
-    verse = { ...FALLBACK[day % FALLBACK.length], image: null, source: 'fallback' };
-    console.log(`Fallback: ${verse.reference}`);
+    verse = { ...FALLBACK[day % FALLBACK.length], version: 'NIV', image: null, source: 'fallback' };
+    console.log(`Using hard-coded fallback: ${verse.reference}`);
   }
+
+  // Best-effort: illustrate with the YouVersion card image when we don't have one.
+  if (!verse.image) verse.image = await fetchYouVersionImage(votdUrl);
 
   // 2. Update Notion callout (safe — only PATCHes, never POSTs)
   await updateCallout(verse);
@@ -161,6 +245,7 @@ async function updateCallout(verse) {
     text: verse.text,
     reference: verse.reference,
     image: verse.image || null,
+    version: verse.version || null,
     source: verse.source,
   }, null, 2));
 

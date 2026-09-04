@@ -6,6 +6,10 @@ on:
     - cron: '30 2 * * *'   # 9:30 PM Bogotá — PM coach
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   coaching:
     runs-on: ubuntu-latest
@@ -29,5 +33,12 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add coaching.json
-          git diff --cached --quiet || git commit -m "chore: update coaching advice [skip ci]"
-          git push
+          git diff --cached --quiet && { echo "No changes to commit."; exit 0; }
+          git commit -m "chore: update coaching advice [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            git push && { echo "Pushed on attempt $attempt."; exit 0; }
+            echo "Push $attempt rejected — rebasing onto latest main and retrying…"
+            git pull --rebase --autostash origin main || true
+            sleep $((attempt * 5))
+          done
+          echo "::error::Could not push coaching.json after 5 attempts."; exit 1
