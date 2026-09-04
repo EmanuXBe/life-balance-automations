@@ -1,0 +1,68 @@
+name: Win-back Email
+
+on:
+  schedule:
+    - cron: '0 14 * * *'   # 9:00 AM Bogotá (UTC-5)
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Send a test email now, regardless of activity'
+        type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  winback:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Generate win-back email
+        id: gen
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+          NOTION_JOURNALING_DB_ID: ${{ secrets.NOTION_JOURNALING_DB_ID }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force }}
+        run: node winback.js
+
+      - name: Send email via Gmail SMTP
+        if: steps.gen.outputs.send == 'true'
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+        run: |
+          curl --silent --show-error --ssl-reqd \
+            --url 'smtps://smtp.gmail.com:465' \
+            --user "$SMTP_USER:$SMTP_PASS" \
+            --mail-from "$SMTP_USER" \
+            --mail-rcpt "$SMTP_USER" \
+            --upload-file email.eml
+          echo "✅ Win-back email sent to $SMTP_USER"
+
+      - name: Commit winback.json
+        if: steps.gen.outputs.commit_state == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add winback.json
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: win-back email sent [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            git pull --rebase --autostash origin main || true
+            sleep $((attempt * 5))
+          done
+          echo "::error::Could not push winback.json after 5 attempts."; exit 1
