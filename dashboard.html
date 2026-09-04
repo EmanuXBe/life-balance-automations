@@ -9,26 +9,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.0.6/wordcloud2.min.js"></script>
     <style>
         :root {
-            /* Cozy warm-dark palette — muted, harmonious, still legible.
-               Warm espresso grounds; honey / sage / clay / dusk-blue accents. */
-            --bg: #17130f;
-            --surface: #201b16;
-            --surface2: #29231d;
-            --border: rgba(217, 154, 108, 0.14);
-            --text: #ece5d8;
-            --muted: rgba(236, 229, 216, 0.42);
-            --accent: #d99a6c;
-            --green: #8faa77;
-            --red: #cd8577;
-            --amber: #dcae6e;
-            --blue: #89a7bb;
-            --pink: #b58aa0;
-            --radius: 12px;
+            /* Cool ink base + warm parchment text. One warm accent (burnt amber)
+               against one cool signal (steel blue) — Power-BI serious, vintage,
+               minimal, serene. Value contrast kept high; chroma kept low. */
+            --bg: #12151a;
+            --surface: #191d24;
+            --surface2: #20252e;
+            --border: rgba(233, 227, 214, 0.09);
+            --text: #e9e3d6;
+            --muted: rgba(233, 227, 214, 0.44);
+            --accent: #dd9160;
+            --green: #8ba888;
+            --red: #c67e6f;
+            --amber: #d7a866;
+            --blue: #7d9bb5;
+            --pink: #b58fa2;
+            --radius: 11px;
             --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            --tier-s: #d99a6c;
-            --tier-a: #8faa77;
-            --tier-b: #dcae6e;
-            --tier-c: #cd8577;
+            --tier-s: #dd9160;
+            --tier-a: #8ba888;
+            --tier-b: #d7a866;
+            --tier-c: #c67e6f;
         }
 
         * {
@@ -47,8 +48,8 @@
 
         /* ── VERSE BANNER ───────────────────────────────────────────────── */
         .verse-banner {
-            background: linear-gradient(135deg, #1f1913 0%, #191410 100%);
-            border: 1px solid rgba(137, 167, 187, 0.35);
+            background: linear-gradient(135deg, #161b22 0%, #12161c 100%);
+            border: 1px solid rgba(125, 155, 181, 0.35);
             border-radius: var(--radius);
             padding: 16px 20px;
             margin-bottom: 14px;
@@ -72,7 +73,7 @@
             font-size: 9px;
             text-transform: uppercase;
             letter-spacing: .1em;
-            color: rgba(137, 167, 187, 0.8);
+            color: rgba(125, 155, 181, 0.8);
             margin-bottom: 5px;
         }
 
@@ -102,8 +103,8 @@
             align-items: center;
             gap: 5px;
             background: transparent;
-            border: 1px solid rgba(137, 167, 187, 0.4);
-            color: rgba(137, 167, 187, 0.9);
+            border: 1px solid rgba(125, 155, 181, 0.4);
+            color: rgba(125, 155, 181, 0.9);
             border-radius: 6px;
             padding: 5px 12px;
             font-size: 10px;
@@ -113,8 +114,8 @@
         }
 
         .plan-btn:hover {
-            border-color: #89a7bb;
-            color: #a7c3d4;
+            border-color: #7d9bb5;
+            color: #b6cadb;
         }
 
         /* ── COACH SECTION ──────────────────────────────────────────────── */
@@ -137,7 +138,7 @@
         }
 
         .coach-card.pm {
-            border-left: 2px solid #89a7bb;
+            border-left: 2px solid #7d9bb5;
         }
 
         .coach-label {
@@ -155,7 +156,7 @@
         }
 
         .coach-card.pm .coach-label {
-            color: #a7c3d4;
+            color: #b6cadb;
         }
 
         .coach-dot {
@@ -170,7 +171,7 @@
         }
 
         .coach-card.pm .coach-dot {
-            background: #89a7bb;
+            background: #7d9bb5;
         }
 
         .coach-text {
@@ -401,22 +402,22 @@
         }
 
         .tier-badge.S {
-            background: rgba(217, 154, 108, 0.18);
+            background: rgba(221, 145, 96, 0.18);
             color: var(--tier-s);
         }
 
         .tier-badge.A {
-            background: rgba(143, 170, 119, 0.18);
+            background: rgba(139, 168, 136, 0.18);
             color: var(--tier-a);
         }
 
         .tier-badge.B {
-            background: rgba(220, 174, 110, 0.18);
+            background: rgba(215, 168, 102, 0.18);
             color: var(--tier-b);
         }
 
         .tier-badge.C {
-            background: rgba(205, 133, 119, 0.18);
+            background: rgba(198, 126, 111, 0.18);
             color: var(--tier-c);
         }
 
@@ -658,7 +659,7 @@
         /* ── AI INSIGHT ─────────────────────────────────────────────────── */
         .insight-card {
             background: var(--surface);
-            border: 1px solid rgba(217, 154, 108, 0.35);
+            border: 1px solid rgba(221, 145, 96, 0.35);
             border-radius: var(--radius);
             padding: 18px 20px;
             margin-bottom: 14px;
@@ -706,19 +707,19 @@
         }
 
         .heatmap-cell.level-1 {
-            background: rgba(217, 154, 108, 0.2);
+            background: rgba(221, 145, 96, 0.2);
         }
 
         .heatmap-cell.level-2 {
-            background: rgba(217, 154, 108, 0.45);
+            background: rgba(221, 145, 96, 0.45);
         }
 
         .heatmap-cell.level-3 {
-            background: rgba(217, 154, 108, 0.7);
+            background: rgba(221, 145, 96, 0.7);
         }
 
         .heatmap-cell.level-4 {
-            background: #d99a6c;
+            background: #dd9160;
         }
 
         /* ── STATE ──────────────────────────────────────────────────────── */
@@ -999,7 +1000,7 @@
 
     <script>
         // ── CONFIG ───────────────────────────────────────────────────────────────
-        const AREA_COLORS = ['#d99a6c', '#8faa77', '#dcae6e', '#cd8577', '#89a7bb', '#b58aa0'];
+        const AREA_COLORS = ['#dd9160', '#8ba888', '#d7a866', '#c67e6f', '#7d9bb5', '#b58fa2'];
         let radarChart = null, donutChart = null, polarChart = null, lineChart = null, bubbleChart = null;
         let habitsLoaded = false, journalLoaded = false;
 
@@ -1085,7 +1086,7 @@
             }
         }
 
-        function habitBarColor(r) { return r >= 85 ? '#8faa77' : r >= 65 ? '#dcae6e' : '#cd8577'; }
+        function habitBarColor(r) { return r >= 85 ? '#8ba888' : r >= 65 ? '#d7a866' : '#c67e6f'; }
 
         function renderHabits(data) {
             const startVal = document.getElementById('start-date').value;
@@ -1136,21 +1137,21 @@
             if (radarChart) radarChart.destroy();
             radarChart = new Chart(document.getElementById('radarChart'), {
                 type: 'radar',
-                data: { labels: data.areaLabels, datasets: [{ label: 'Avg %', data: data.areaAvgs, backgroundColor: 'rgba(217,154,108,0.1)', borderColor: '#d99a6c', borderWidth: 1.5, pointBackgroundColor: AREA_COLORS, pointRadius: 4, pointHoverRadius: 6 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, color: 'rgba(255,255,255,0.3)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(217,154,108,0.1)' }, angleLines: { color: 'rgba(217,154,108,0.1)' }, pointLabels: { color: 'rgba(236,229,216,0.55)', font: { size: 10 } } } } }
+                data: { labels: data.areaLabels, datasets: [{ label: 'Avg %', data: data.areaAvgs, backgroundColor: 'rgba(221,145,96,0.1)', borderColor: '#dd9160', borderWidth: 1.5, pointBackgroundColor: AREA_COLORS, pointRadius: 4, pointHoverRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, color: 'rgba(233,227,214,0.34)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(221,145,96,0.1)' }, angleLines: { color: 'rgba(221,145,96,0.1)' }, pointLabels: { color: 'rgba(233,227,214,0.55)', font: { size: 10 } } } } }
             });
             document.getElementById('radar-legend').innerHTML = (data.areaLabels || []).map((l, i) =>
                 `<div class="legend-item"><div class="legend-dot" style="background:${AREA_COLORS[i]}"></div>${l}: ${data.areaAvgs?.[i] ?? 0}%</div>`).join('');
 
             // Donut — tiers
             const tL = ['S — Perfect', 'A — Strong', 'B — Acceptable', 'C — Below std'];
-            const tC = ['#d99a6c', '#8faa77', '#dcae6e', '#cd8577'];
+            const tC = ['#dd9160', '#8ba888', '#d7a866', '#c67e6f'];
             const tV = [tc.S ?? 0, tc.A ?? 0, tc.B ?? 0, tc.C ?? 0];
             const nz = tV.map((v, i) => v > 0 ? i : -1).filter(i => i >= 0);
             if (donutChart) donutChart.destroy();
             donutChart = new Chart(document.getElementById('donutChart'), {
                 type: 'doughnut',
-                data: { labels: nz.map(i => tL[i]), datasets: [{ data: nz.map(i => tV[i]), backgroundColor: nz.map(i => tC[i]), borderColor: '#17130f', borderWidth: 2, hoverOffset: 4 }] },
+                data: { labels: nz.map(i => tL[i]), datasets: [{ data: nz.map(i => tV[i]), backgroundColor: nz.map(i => tC[i]), borderColor: '#12151a', borderWidth: 2, hoverOffset: 4 }] },
                 options: { responsive: true, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { display: false } } }
             });
             document.getElementById('donut-legend').innerHTML = nz.map(i =>
@@ -1202,7 +1203,7 @@
                 canvas.width = wrap.offsetWidth || 400; canvas.height = wrap.offsetHeight || 280;
                 const maxC = data.wordFrequency[0].count || 1;
                 const list = data.wordFrequency.slice(0, 60).map(w => [w.word, Math.round(10 + w.count / maxC * 40)]);
-                const cols = ['#d99a6c', '#dcae6e', '#8faa77', '#cd8577', '#89a7bb', '#b58aa0'];
+                const cols = ['#dd9160', '#d7a866', '#8ba888', '#c67e6f', '#7d9bb5', '#b58fa2'];
                 WordCloud(canvas, { list, gridSize: 8, weightFactor: 1, fontFamily: 'sans-serif', color: () => cols[Math.floor(Math.random() * cols.length)], rotateRatio: 0.3, backgroundColor: 'transparent', minSize: 10 });
             }
 
@@ -1210,22 +1211,22 @@
             if (polarChart) polarChart.destroy();
             polarChart = new Chart(document.getElementById('polarChart'), {
                 type: 'polarArea',
-                data: { labels: ['AM — Morning', 'PM — Evening'], datasets: [{ data: [amPct, pmPct], backgroundColor: ['rgba(217,154,108,0.6)', 'rgba(143,170,119,0.6)'], borderColor: ['#d99a6c', '#8faa77'], borderWidth: 1.5 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.07)' } } } }
+                data: { labels: ['AM — Morning', 'PM — Evening'], datasets: [{ data: [amPct, pmPct], backgroundColor: ['rgba(221,145,96,0.6)', 'rgba(139,168,136,0.6)'], borderColor: ['#dd9160', '#8ba888'], borderWidth: 1.5 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { ticks: { color: 'rgba(233,227,214,0.34)', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(233,227,214,0.07)' } } } }
             });
             document.getElementById('polar-legend').innerHTML = [
-                { l: 'AM — Morning', c: '#d99a6c', v: amPct + '%' }, { l: 'PM — Evening', c: '#8faa77', v: pmPct + '%' }
+                { l: 'AM — Morning', c: '#dd9160', v: amPct + '%' }, { l: 'PM — Evening', c: '#8ba888', v: pmPct + '%' }
             ].map(x => `<div class="legend-item"><div class="legend-dot" style="background:${x.c}"></div>${x.l}: ${x.v}</div>`).join('');
 
             if (lineChart) lineChart.destroy();
             lineChart = new Chart(document.getElementById('lineChart'), {
                 type: 'line',
-                data: { labels: data.wordsByDate.map(d => d.date ? new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '?'), datasets: [{ label: 'Words', data: data.wordsByDate.map(d => d.count), borderColor: '#d99a6c', backgroundColor: 'rgba(217,154,108,0.08)', borderWidth: 1.5, pointRadius: 3, pointBackgroundColor: '#d99a6c', tension: 0.3, fill: true }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+                data: { labels: data.wordsByDate.map(d => d.date ? new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '?'), datasets: [{ label: 'Words', data: data.wordsByDate.map(d => d.count), borderColor: '#dd9160', backgroundColor: 'rgba(221,145,96,0.08)', borderWidth: 1.5, pointRadius: 3, pointBackgroundColor: '#dd9160', tension: 0.3, fill: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'rgba(233,227,214,0.38)', font: { size: 9 }, maxRotation: 45 }, grid: { color: 'rgba(233,227,214,0.05)' } }, y: { ticks: { color: 'rgba(233,227,214,0.38)', font: { size: 9 } }, grid: { color: 'rgba(233,227,214,0.05)' } } } }
             });
 
             if (bubbleChart) bubbleChart.destroy();
-            const top = data.wordFrequency.slice(0, 20), maxB = top[0]?.count || 1, colsB = ['#d99a6c', '#8faa77', '#dcae6e', '#cd8577', '#89a7bb', '#b58aa0'];
+            const top = data.wordFrequency.slice(0, 20), maxB = top[0]?.count || 1, colsB = ['#dd9160', '#8ba888', '#d7a866', '#c67e6f', '#7d9bb5', '#b58fa2'];
             bubbleChart = new Chart(document.getElementById('bubbleChart'), {
                 type: 'bubble',
                 data: { datasets: top.map((w, i) => ({ label: w.word, data: [{ x: (i % 5) * 20 + 10 + (Math.random() - .5) * 6, y: Math.floor(i / 5) * 22 + 15 + (Math.random() - .5) * 4, r: Math.max(6, Math.round(w.count / maxB * 28)) }], backgroundColor: colsB[i % colsB.length] + '99', borderColor: colsB[i % colsB.length], borderWidth: 1 })) },
