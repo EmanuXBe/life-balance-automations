@@ -148,7 +148,10 @@ async function callGemini(prompt, attempt = 1) {
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          maxOutputTokens: 1500,   // headroom for dynamic thinking + the answer
+          // Bounded thinking + room for the answer. maxOutputTokens counts
+          // thinking tokens too, so keep it well above thinkingBudget.
+          thinkingConfig: { thinkingBudget: 512 },
+          maxOutputTokens: 1200,
           temperature: 0.8,
         },
       }),
