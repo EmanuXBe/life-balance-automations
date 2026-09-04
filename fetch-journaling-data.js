@@ -1,7 +1,10 @@
 // fetch-journaling-data.js
 // Fetches journaling entries from Notion, processes text, generates AI insight.
 // Writes journaling-data.json for the dashboard.
-// ADDED: recentEntries (last 3 entries with text excerpts for AI coaching)
+//
+// PRIVACY: this file never stores raw journal text. Only aggregates
+// (counts, word frequency, section balance) are written. The AI coach reads
+// the last few entries straight from Notion — see generate-coaching.js.
 
 const fs = require('fs');
 
@@ -129,14 +132,13 @@ function mergeFreq(a, b) {
             totalEntries: 0, totalWords: 0, avgWordsPerEntry: 0,
             wordFrequency: [], wordsByDate: [], heatmapData: [],
             sectionBalance: { am: { words: 0, pct: 50 }, pm: { words: 0, pct: 50 } },
-            recentEntries: [], aiInsight: null,
+            aiInsight: null,
         }, null, 2));
         return;
     }
 
     let globalFreq = {}, amFreq = {}, pmFreq = {};
     const wordsByDate = [], heatmapData = [];
-    const allEntries = []; // for recentEntries
 
     for (const page of pages) {
         const dateVal = page.properties?.['Fecha']?.date?.start
@@ -151,13 +153,6 @@ function mergeFreq(a, b) {
         const totalWords = countWords(text);
         wordsByDate.push({ date: dateVal, count: totalWords });
         heatmapData.push({ date: dateVal, count: totalWords });
-
-        // Store excerpt for coaching
-        allEntries.push({
-            date: dateVal,
-            wordCount: totalWords,
-            excerpt: text.substring(0, 600).trim() + (text.length > 600 ? '...' : ''),
-        });
 
         const freq = wordFrequency(text);
         globalFreq = mergeFreq(globalFreq, freq);
@@ -192,12 +187,6 @@ function mergeFreq(a, b) {
 
     const aiInsight = generateInsightAlgorithmic(sortedFreq, amPct, pmPct, trend);
 
-    // Recent entries — last 3, most recent first, for coaching context
-    const recentEntries = [...allEntries]
-        .filter(e => e.date)
-        .sort((a, b) => b.date.localeCompare(a.date))
-        .slice(0, 3);
-
     const output = {
         updatedAt: new Date().toISOString(),
         totalEntries: pages.length,
@@ -208,11 +197,10 @@ function mergeFreq(a, b) {
             am: { words: amWords, pct: amPct },
             pm: { words: pmWords, pct: pmPct },
         },
-        recentEntries, // ← NEW: used by generate-coaching.js
         aiInsight,
     };
 
     fs.writeFileSync('journaling-data.json', JSON.stringify(output, null, 2));
     console.log('✅ journaling-data.json written.');
-    console.log(`Total entries: ${pages.length}, Words: ${totalWords}, Recent entries: ${recentEntries.length}`);
+    console.log(`Total entries: ${pages.length}, Words: ${totalWords}`);
 })();

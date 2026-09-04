@@ -26,6 +26,8 @@ jobs:
       - name: Generate coaching advice
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_JOURNALING_DB_ID: ${{ secrets.NOTION_JOURNALING_DB_ID }}
         run: node generate-coaching.js
 
       - name: Commit coaching.json

@@ -1,10 +1,14 @@
 // generate-coaching.js
 // Runs twice daily via GitHub Actions (generate-coaching.yml).
 // Uses Gemini 2.5 Flash — requires GEMINI_API_KEY secret.
+// Reads the last few journal entries straight from Notion (NOTION_TOKEN +
+// NOTION_JOURNALING_DB_ID) so raw journal text is never committed to the repo.
 
 const fs = require('fs');
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
+const NOTION_TOKEN = process.env.NOTION_TOKEN;
+const JOURNALING_DB_ID = process.env.NOTION_JOURNALING_DB_ID;
 
 // ─── TIME (Bogotá = UTC-5, no DST) ───────────────────────────────────────────
 
@@ -21,6 +25,68 @@ function getTodayBogota() {
 function readJSON(path, fallback = null) {
   try { return JSON.parse(fs.readFileSync(path, 'utf8')); }
   catch { return fallback; }
+}
+
+// ─── JOURNAL ENTRIES FROM NOTION (never committed to the repo) ────────────────
+
+async function notionFetch(path, method = 'GET', body = null) {
+  const res = await fetch(`https://api.notion.com/v1${path}`, {
+    method,
+    headers: {
+      'Authorization': `Bearer ${NOTION_TOKEN}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error(`Notion API ${path}: ${await res.text()}`);
+  return res.json();
+}
+
+async function getPageText(pageId) {
+  const res = await notionFetch(`/blocks/${pageId}/children?page_size=100`);
+  const USER_TYPES = ['paragraph', 'bulleted_list_item', 'numbered_list_item', 'quote'];
+  let text = '';
+  for (const block of res.results) {
+    if (!USER_TYPES.includes(block.type)) continue;
+    const line = (block[block.type]?.rich_text || []).map(r => r.plain_text).join('').trim();
+    if (line.startsWith('→')) {
+      const content = line.replace(/^→\s*/, '').trim();
+      if (content.length > 2) text += content + ' ';
+    }
+  }
+  return text.trim();
+}
+
+// Last N dated journal entries, most recent first. Returns [] on any problem —
+// the coach still works, just without journal context.
+async function fetchRecentJournalEntries(limit = 3) {
+  if (!NOTION_TOKEN || !JOURNALING_DB_ID) {
+    console.warn('No NOTION_TOKEN / NOTION_JOURNALING_DB_ID — coaching without journal context.');
+    return [];
+  }
+  try {
+    const res = await notionFetch(`/databases/${JOURNALING_DB_ID}/query`, 'POST', {
+      page_size: 12,
+      sorts: [{ property: 'Fecha', direction: 'descending' }],
+    });
+    const entries = [];
+    for (const page of res.results) {
+      const date = page.properties?.['Fecha']?.date?.start
+        || page.properties?.['Date']?.date?.start || null;
+      if (!date) continue;
+      let text = '';
+      try { text = await getPageText(page.id); } catch { continue; }
+      if (!text) continue;
+      entries.push({ date, excerpt: text.slice(0, 600).trim() + (text.length > 600 ? '...' : '') });
+      if (entries.length >= limit) break;
+    }
+    console.log(`Loaded ${entries.length} recent journal entries from Notion.`);
+    return entries;
+  } catch (e) {
+    console.warn(`Could not load journal entries from Notion: ${e.message}`);
+    return [];
+  }
 }
 
 function buildJournalContext(journalingData, todayDate = null) {
@@ -163,6 +229,9 @@ function buildPMPrompt(habits, journaling, todayDate) {
   const habits = readJSON('data.json', {});
   const journaling = readJSON('journaling-data.json', {});
   const existing = readJSON('coaching.json', {});
+
+  // Pull recent journal text live from Notion (not from the repo).
+  journaling.recentEntries = await fetchRecentJournalEntries(3);
 
   const bogotaHour = getBogotaHour();
   const todayDate = getTodayBogota();
