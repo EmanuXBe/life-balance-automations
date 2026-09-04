@@ -1,2 +1,8 @@
 # Rendered email body for the win-back job — never committed
 email.eml
+
+# Plaintext data — only the encrypted *.enc.json versions are committed.
+# (Locally you can still generate these for dev; they will never be pushed.)
+data.json
+journaling-data.json
+coaching.json

@@ -29,11 +29,16 @@ jobs:
           NOTION_JOURNALING_DB_ID: ${{ secrets.NOTION_JOURNALING_DB_ID }}
         run: node fetch-journaling-data.js
 
-      - name: Commit journaling-data.json
+      - name: Encrypt journaling-data.json → journaling-data.enc.json
+        env:
+          DATA_ENCRYPTION_KEY: ${{ secrets.DATA_ENCRYPTION_KEY }}
+        run: node encrypt-data.js journaling-data.json
+
+      - name: Commit journaling-data.enc.json
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add journaling-data.json
+          git add journaling-data.enc.json
           git diff --cached --quiet && { echo "No changes to commit."; exit 0; }
           git commit -m "chore: update journaling data [skip ci]"
           for attempt in 1 2 3 4 5; do

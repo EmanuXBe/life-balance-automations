@@ -34,6 +34,7 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
           NOTION_JOURNALING_DB_ID: ${{ secrets.NOTION_JOURNALING_DB_ID }}
+          DATA_ENCRYPTION_KEY: ${{ secrets.DATA_ENCRYPTION_KEY }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
           FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force }}
         run: node winback.js

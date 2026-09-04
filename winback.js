@@ -8,12 +8,14 @@
 // Notion, never from the repo).
 
 const fs = require('fs');
+const { decryptJSON } = require('./lib/crypto');
 
 const GEMINI_KEY       = process.env.GEMINI_API_KEY;
 const NOTION_TOKEN     = process.env.NOTION_TOKEN;
 const DAILY10_DB_ID    = process.env.NOTION_DB_ID;
 const JOURNALING_DB_ID = process.env.NOTION_JOURNALING_DB_ID;
 const SMTP_USER        = process.env.SMTP_USER;
+const DATA_KEY         = process.env.DATA_ENCRYPTION_KEY;
 
 const FORCE          = /^(1|true|yes)$/i.test(process.env.FORCE || '');
 const THRESHOLD_DAYS = parseInt(process.env.WINBACK_THRESHOLD_DAYS || '3', 10); // silence before the first nudge
@@ -25,6 +27,14 @@ const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86400
 
 function readJSON(p, fb = null) {
   try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return fb; }
+}
+async function readData(name, fb = {}) {
+  if (fs.existsSync(`${name}.json`)) return readJSON(`${name}.json`, fb);
+  if (fs.existsSync(`${name}.enc.json`) && DATA_KEY) {
+    try { return await decryptJSON(readJSON(`${name}.enc.json`), DATA_KEY); }
+    catch (e) { console.warn(`Could not decrypt ${name}.enc.json: ${e.message}`); return fb; }
+  }
+  return fb;
 }
 function setOutput(k, v) {
   if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `${k}=${v}\n`);
@@ -258,7 +268,7 @@ function buildEml({ from, to, subject, headline, bodyEs, bodyEn, daysInactive })
     if (!gapOK) { console.log(`Last emailed ${state.lastSentAt} — within ${MIN_GAP_DAYS}-day gap, skipping.`); setOutput('send', 'false'); return; }
   }
 
-  const habits = readJSON('data.json', {});
+  const habits = await readData('data', {});
   const journal = await recentJournal(2);
   const raw = await gemini(buildPrompt({ daysInactive, habits, journal }));
 

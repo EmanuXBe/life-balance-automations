@@ -5,10 +5,12 @@
 // NOTION_JOURNALING_DB_ID) so raw journal text is never committed to the repo.
 
 const fs = require('fs');
+const { decryptJSON } = require('./lib/crypto');
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
 const NOTION_TOKEN = process.env.NOTION_TOKEN;
 const JOURNALING_DB_ID = process.env.NOTION_JOURNALING_DB_ID;
+const DATA_KEY = process.env.DATA_ENCRYPTION_KEY;
 
 // ─── TIME (Bogotá = UTC-5, no DST) ───────────────────────────────────────────
 
@@ -25,6 +27,16 @@ function getTodayBogota() {
 function readJSON(path, fallback = null) {
   try { return JSON.parse(fs.readFileSync(path, 'utf8')); }
   catch { return fallback; }
+}
+
+// Reads <name>.json if present (local dev), otherwise decrypts <name>.enc.json.
+async function readData(name, fallback = {}) {
+  if (fs.existsSync(`${name}.json`)) return readJSON(`${name}.json`, fallback);
+  if (fs.existsSync(`${name}.enc.json`) && DATA_KEY) {
+    try { return await decryptJSON(readJSON(`${name}.enc.json`), DATA_KEY); }
+    catch (e) { console.warn(`Could not decrypt ${name}.enc.json: ${e.message}`); return fallback; }
+  }
+  return fallback;
 }
 
 // ─── JOURNAL ENTRIES FROM NOTION (never committed to the repo) ────────────────
@@ -226,9 +238,9 @@ function buildPMPrompt(habits, journaling, todayDate) {
 // ─── MAIN ────────────────────────────────────────────────────────────────────
 
 (async () => {
-  const habits = readJSON('data.json', {});
-  const journaling = readJSON('journaling-data.json', {});
-  const existing = readJSON('coaching.json', {});
+  const habits = await readData('data', {});
+  const journaling = await readData('journaling-data', {});
+  const existing = await readData('coaching', {});
 
   // Pull recent journal text live from Notion (not from the repo).
   journaling.recentEntries = await fetchRecentJournalEntries(3);

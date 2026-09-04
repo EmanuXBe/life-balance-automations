@@ -29,11 +29,16 @@ jobs:
           NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}   # Daily 10 DB — different from NOTION_PAGE_ID
         run: node fetch-notion-data.js
 
-      - name: Commit data.json
+      - name: Encrypt data.json → data.enc.json
+        env:
+          DATA_ENCRYPTION_KEY: ${{ secrets.DATA_ENCRYPTION_KEY }}
+        run: node encrypt-data.js data.json
+
+      - name: Commit data.enc.json
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.json
+          git add data.enc.json
           git diff --cached --quiet && { echo "No changes to commit."; exit 0; }
           git commit -m "chore: update dashboard data [skip ci]"
           for attempt in 1 2 3 4 5; do

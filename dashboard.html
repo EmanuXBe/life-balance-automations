@@ -794,6 +794,19 @@
         </div>
     </div>
 
+    <!-- DATA KEY MODAL -->
+    <div class="pat-modal-overlay" id="key-modal-overlay">
+        <div class="pat-modal">
+            <h3>🔒 Data key</h3>
+            <p>Your habits, journaling and coaching data are stored <strong>encrypted</strong> in the repo. Paste the same value as the <code>DATA_ENCRYPTION_KEY</code> secret to decrypt it in this browser. Stored only in localStorage — it never leaves this device.</p>
+            <input type="password" id="key-input" placeholder="data encryption key…" />
+            <div class="pat-modal-actions">
+                <button onclick="closeKeyModal()">Cancel</button>
+                <button class="btn-save" onclick="saveKey()">Unlock</button>
+            </div>
+        </div>
+    </div>
+
     <div class="header">
         <div>
             <div class="header-title">Life Balance</div>
@@ -801,6 +814,7 @@
         </div>
         <div style="display:flex;align-items:center;gap:2px;">
             <button class="refresh-btn" id="refresh-btn" onclick="syncAll()">↻ Refresh</button>
+            <button class="settings-btn" onclick="openKeyModal()" title="Data encryption key">🔒</button>
             <button class="settings-btn" onclick="openPATModal()" title="Configure GitHub token">⚙</button>
         </div>
     </div>
@@ -1032,9 +1046,7 @@
         // ── COACHING ─────────────────────────────────────────────────────────────
         async function loadCoaching() {
             try {
-                const res = await fetch('coaching.json?t=' + Date.now());
-                if (!res.ok) return;
-                const data = await res.json();
+                const data = await loadJSON('coaching');
 
                 const amEl = document.getElementById('coach-am');
                 const pmEl = document.getElementById('coach-pm');
@@ -1052,8 +1064,8 @@
                 } else {
                     pmEl.textContent = 'PM coaching will appear at 9:30 PM Bogotá after your end-of-day reflection.';
                 }
-            } catch {
-                document.getElementById('coach-am').textContent = 'coaching.json not found — run Generate Coaching action first.';
+            } catch (e) {
+                document.getElementById('coach-am').textContent = e.locked ? e.message : 'coaching.json not found — run Generate Coaching action first.';
                 document.getElementById('coach-pm').textContent = '';
             }
         }
@@ -1061,9 +1073,7 @@
         // ── HABITS ───────────────────────────────────────────────────────────────
         async function loadHabits() {
             try {
-                const res = await fetch('data.json?t=' + Date.now());
-                if (!res.ok) throw new Error('data.json not found — run Fetch Notion Data action first.');
-                const data = await res.json();
+                const data = await loadJSON('data');
                 renderHabits(data);
                 document.getElementById('updated-at').textContent = 'Last updated: ' + new Date(data.updatedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
                 habitsLoaded = true;
@@ -1164,9 +1174,7 @@
         // ── JOURNALING ───────────────────────────────────────────────────────────
         async function loadJournaling() {
             try {
-                const res = await fetch('journaling-data.json?t=' + Date.now());
-                if (!res.ok) throw new Error('journaling-data.json not found — run Fetch Journaling Data action first.');
-                const data = await res.json();
+                const data = await loadJSON('journaling-data');
                 renderJournaling(data);
                 journalLoaded = true;
             } catch (e) {
@@ -1252,6 +1260,55 @@
 
         // ── UTILS ────────────────────────────────────────────────────────────────
         function show(id, msg) { const el = document.getElementById(id); el.style.display = 'block'; el.textContent = msg; }
+
+        // ── DATA DECRYPTION ──────────────────────────────────────────────────────
+        // data / journaling / coaching are stored as <name>.enc.json (AES-GCM,
+        // PBKDF2-SHA256). Mirrors lib/crypto.js. verse.json stays plaintext.
+        function getDataKey() { try { return localStorage.getItem('lb_data_key') || ''; } catch { return ''; } }
+
+        function openKeyModal() {
+            document.getElementById('key-input').value = getDataKey();
+            document.getElementById('key-modal-overlay').classList.add('open');
+        }
+        function closeKeyModal() {
+            document.getElementById('key-modal-overlay').classList.remove('open');
+        }
+        function saveKey() {
+            const val = document.getElementById('key-input').value.trim();
+            try { val ? localStorage.setItem('lb_data_key', val) : localStorage.removeItem('lb_data_key'); } catch {}
+            closeKeyModal();
+            loadAll();
+        }
+
+        async function decryptEnvelope(env, passphrase) {
+            const b = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+            const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(passphrase), 'PBKDF2', false, ['deriveKey']);
+            const key = await crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt: b(env.salt), iterations: env.iter || 150000, hash: 'SHA-256' },
+                base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+            const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(env.iv) }, key, b(env.ct));
+            return JSON.parse(new TextDecoder().decode(pt));
+        }
+
+        // Loads <name>.enc.json (decrypting) or falls back to plaintext <name>.json.
+        async function loadJSON(name) {
+            let res = await fetch(name + '.enc.json?t=' + Date.now());
+            if (res.ok) {
+                const key = getDataKey();
+                if (!key) {
+                    const embedded = window.self !== window.top;
+                    const e = new Error(embedded
+                        ? '🔒 Open this dashboard in a new tab, then click 🔒 to enter your data key.'
+                        : '🔒 Locked — click the 🔒 button and paste your data key.');
+                    e.locked = true; throw e;
+                }
+                try { return await decryptEnvelope(await res.json(), key); }
+                catch { const e = new Error('🔒 Wrong data key — click 🔒 to fix it.'); e.locked = true; throw e; }
+            }
+            res = await fetch(name + '.json?t=' + Date.now());
+            if (res.ok) return res.json();
+            throw new Error(name + ' not found — run its workflow first.');
+        }
 
         // ── GITHUB API ───────────────────────────────────────────────────────────
         const GITHUB_REPO   = 'EmanuXBe/life-balance-automations';
