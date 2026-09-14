@@ -1,0 +1,32 @@
+name: Sync Training → Google Calendar
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # every 30 minutes
+  workflow_dispatch:       # manual trigger for testing
+
+# Never let this workflow race itself — a newer run replaces an older in-flight one.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read       # nothing is committed back
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Mirror Notion sessions into the Personal calendar
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_SESSIONS_DB_ID: ${{ secrets.NOTION_SESSIONS_DB_ID }}             # Entrenamiento → 02 Sesiones
+          GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}                   # Personal calendar
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: node sync-training-calendar.js

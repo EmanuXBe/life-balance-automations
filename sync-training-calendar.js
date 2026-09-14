@@ -1,0 +1,210 @@
+// sync-training-calendar.js
+// Runs in GitHub Actions. Mirrors the Notion "02 Sesiones" training sessions
+// into the Google "Personal" calendar, so the same sessions show up in
+// Google Calendar, Apple Calendar and Notion Calendar.
+//
+// ─────────────────────────────────────────────────────────────────────────────
+// ONE-WAY SYNC: Notion is the source of truth.
+//   • Each session becomes one event whose Google event id IS the Notion page
+//     id (32 hex chars are valid base32hex) → re-runs update, never duplicate.
+//   • Date-only sessions get the default training slot (5:30–7:00 AM Bogotá).
+//   • Sessions deleted in Notion (or whose date was cleared) are removed from
+//     the calendar. Only events tagged source=notion-training are ever touched.
+//
+// AUTH: a Google service account (no deps — JWT signed with node:crypto).
+// The Personal calendar must be shared with the service account's email with
+// "Make changes to events".
+// ─────────────────────────────────────────────────────────────────────────────
+
+const crypto = require('crypto');
+
+const NOTION_TOKEN = process.env.NOTION_TOKEN;
+const SESSIONS_DB_ID = process.env.NOTION_SESSIONS_DB_ID;
+const CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID;
+const SERVICE_ACCOUNT_JSON = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+const DRY_RUN = process.env.DRY_RUN === '1';
+
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+const TZ = 'America/Bogota';
+const TZ_OFFSET = '-05:00';                  // Bogotá has no DST
+const DEFAULT_START = '05:30';
+const DEFAULT_MINUTES = 90;
+const LOOKBACK_DAYS = 30;                    // older sessions are left alone
+const SOURCE_TAG = 'notion-training';
+
+// Google Calendar colorIds: 6 Tangerine · 10 Basil · 8 Graphite
+const STATUS_STYLE = {
+  Planeada: { suffix: '', colorId: '6' },
+  Completada: { suffix: ' ✓', colorId: '10' },
+  Saltada: { suffix: ' (saltada)', colorId: '8' },
+};
+
+// ─── GOOGLE AUTH ─────────────────────────────────────────────────────────────
+const b64url = (buf) => Buffer.from(buf).toString('base64url');
+
+async function getGoogleToken() {
+  const sa = JSON.parse(SERVICE_ACCOUNT_JSON);
+  const now = Math.floor(Date.now() / 1000);
+  const header = b64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+  const claims = b64url(JSON.stringify({
+    iss: sa.client_email,
+    scope: 'https://www.googleapis.com/auth/calendar.events',
+    aud: sa.token_uri,
+    iat: now,
+    exp: now + 3600,
+  }));
+  const signature = crypto.createSign('RSA-SHA256').update(`${header}.${claims}`).sign(sa.private_key);
+  const res = await fetch(sa.token_uri, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: `${header}.${claims}.${b64url(signature)}`,
+    }),
+  });
+  if (!res.ok) throw new Error(`Google token error: ${await res.text()}`);
+  return (await res.json()).access_token;
+}
+
+async function gcal(token, method, path, body) {
+  const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}${path}`;
+  const res = await fetch(url, {
+    method,
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Google Calendar ${method} ${path}: ${res.status} ${await res.text()}`);
+  return res.status === 204 ? {} : res.json();
+}
+
+// ─── NOTION QUERY ────────────────────────────────────────────────────────────
+async function queryNotion(cursor, since) {
+  const body = {
+    page_size: 100,
+    filter: { property: 'Fecha', date: { on_or_after: since } },
+    sorts: [{ property: 'Fecha', direction: 'ascending' }],
+  };
+  if (cursor) body.start_cursor = cursor;
+  const res = await fetch(`https://api.notion.com/v1/databases/${SESSIONS_DB_ID}/query`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${NOTION_TOKEN}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Notion API error: ${await res.text()}`);
+  return res.json();
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+const plainText = (prop) => (prop?.title || prop?.rich_text || []).map(t => t.plain_text).join('');
+
+function toEvent(page) {
+  const p = page.properties;
+  const fecha = p['Fecha']?.date;
+  const estado = p['Estado']?.select?.name || 'Planeada';
+  const plan = p['Día del plan']?.select?.name || 'Entrenamiento';
+  const minutes = p['Duración min']?.number || DEFAULT_MINUTES;
+  const style = STATUS_STYLE[estado] || STATUS_STYLE.Planeada;
+
+  let start, end;
+  if (fecha.start.includes('T')) {
+    start = new Date(fecha.start);
+    end = fecha.end ? new Date(fecha.end) : new Date(start.getTime() + minutes * 60000);
+  } else {
+    start = new Date(`${fecha.start}T${DEFAULT_START}:00${TZ_OFFSET}`);
+    end = new Date(start.getTime() + minutes * 60000);
+  }
+
+  const notas = plainText(p['Notas']);
+  return {
+    id: page.id.replace(/-/g, ''),
+    status: 'confirmed',
+    summary: `🏋️ ${plan}${style.suffix}`,
+    description: [`Sesión: ${plainText(p['Sesión'])}`, `Estado: ${estado}`, notas, page.url].filter(Boolean).join('\n'),
+    start: { dateTime: start.toISOString(), timeZone: TZ },
+    end: { dateTime: end.toISOString(), timeZone: TZ },
+    colorId: style.colorId,
+    extendedProperties: { private: { source: SOURCE_TAG } },
+  };
+}
+
+// Compare only the fields we own, with times normalized to instants.
+function sameEvent(a, b) {
+  return a.summary === b.summary
+    && (a.description || '') === (b.description || '')
+    && (a.colorId || '') === (b.colorId || '')
+    && Date.parse(a.start.dateTime) === Date.parse(b.start?.dateTime)
+    && Date.parse(a.end.dateTime) === Date.parse(b.end?.dateTime);
+}
+
+// ─── MAIN ─────────────────────────────────────────────────────────────────────
+(async () => {
+  if (!NOTION_TOKEN) throw new Error('Missing NOTION_TOKEN');
+  if (!SESSIONS_DB_ID) throw new Error('Missing NOTION_SESSIONS_DB_ID');
+  if (!CALENDAR_ID) throw new Error('Missing GOOGLE_CALENDAR_ID');
+  // Not configured yet → skip quietly so the */30 schedule doesn't spam failure emails.
+  if (!SERVICE_ACCOUNT_JSON) {
+    console.log('::warning::GOOGLE_SERVICE_ACCOUNT_JSON not set yet — skipping calendar sync.');
+    return;
+  }
+
+  const since = new Date(Date.now() - LOOKBACK_DAYS * 86400000).toISOString().slice(0, 10);
+
+  const pages = [];
+  let cursor;
+  do {
+    const res = await queryNotion(cursor, since);
+    pages.push(...res.results);
+    cursor = res.has_more ? res.next_cursor : null;
+  } while (cursor);
+
+  const wanted = new Map(pages.filter(pg => pg.properties['Fecha']?.date?.start).map(pg => {
+    const ev = toEvent(pg);
+    return [ev.id, ev];
+  }));
+  console.log(`Fetched ${pages.length} sessions from Notion since ${since} (${wanted.size} with a date).`);
+
+  const token = await getGoogleToken();
+
+  // Existing synced events in the same window.
+  const existing = new Map();
+  let pageToken;
+  do {
+    const qs = new URLSearchParams({
+      privateExtendedProperty: `source=${SOURCE_TAG}`,
+      timeMin: `${since}T00:00:00${TZ_OFFSET}`,
+      maxResults: '250',
+      showDeleted: 'false',
+    });
+    if (pageToken) qs.set('pageToken', pageToken);
+    const res = await gcal(token, 'GET', `/events?${qs}`);
+    (res?.items || []).forEach(ev => existing.set(ev.id, ev));
+    pageToken = res?.nextPageToken;
+  } while (pageToken);
+
+  const counts = { created: 0, updated: 0, unchanged: 0, deleted: 0 };
+
+  for (const [id, ev] of wanted) {
+    const current = existing.get(id);
+    if (current && sameEvent(ev, current)) { counts.unchanged++; continue; }
+    if (DRY_RUN) { console.log(`[dry-run] ${current ? 'update' : 'upsert'} ${ev.summary} @ ${ev.start.dateTime}`); continue; }
+    // PUT revives an event with this id even if it was deleted before; 404 → brand new.
+    const updated = await gcal(token, 'PUT', `/events/${id}`, ev);
+    if (updated) { current ? counts.updated++ : counts.created++; continue; }
+    await gcal(token, 'POST', '/events', ev);
+    counts.created++;
+  }
+
+  for (const id of existing.keys()) {
+    if (wanted.has(id)) continue;
+    if (DRY_RUN) { console.log(`[dry-run] delete ${existing.get(id).summary}`); continue; }
+    await gcal(token, 'DELETE', `/events/${id}`);
+    counts.deleted++;
+  }
+
+  console.log(`✅ Calendar sync done${DRY_RUN ? ' (dry run)' : ''}:`, counts);
+})().catch(err => { console.error(err); process.exit(1); });
