@@ -1,5 +1,5 @@
 // sync-training-calendar.js
-// Runs in GitHub Actions. Mirrors the Notion "02 Sesiones" training sessions
+// Runs in GitHub Actions. Mirrors the Notion training sessions DB
 // into the Google "Personal" calendar, so the same sessions show up in
 // Google Calendar, Apple Calendar and Notion Calendar.
 //
@@ -10,6 +10,9 @@
 //   • Date-only sessions get the default training slot (5:30–7:00 AM Bogotá).
 //   • Sessions deleted in Notion (or whose date was cleared) are removed from
 //     the calendar. Only events tagged source=notion-training are ever touched.
+//   • The calendar is always in English. Property names and select values are
+//     read in English first, Spanish as fallback (the tracker was built in
+//     Spanish), so renaming the Notion schema never breaks the sync.
 //
 // AUTH: a Google service account (no deps — JWT signed with node:crypto).
 // The Personal calendar must be shared with the service account's email with
@@ -32,11 +35,30 @@ const DEFAULT_MINUTES = 90;
 const LOOKBACK_DAYS = 30;                    // older sessions are left alone
 const SOURCE_TAG = 'notion-training';
 
+// Property names: English first, Spanish fallback.
+const PROPS = {
+  date: ['Date', 'Fecha'],
+  status: ['Status', 'Estado'],
+  plan: ['Plan Day', 'Día del plan'],
+  minutes: ['Duration (min)', 'Duración min'],
+  title: ['Session', 'Sesión'],
+  notes: ['Notes', 'Notas'],
+};
+
 // Google Calendar colorIds: 6 Tangerine · 10 Basil · 8 Graphite
-const STATUS_STYLE = {
-  Planeada: { suffix: '', colorId: '6' },
-  Completada: { suffix: ' ✓', colorId: '10' },
-  Saltada: { suffix: ' (saltada)', colorId: '8' },
+const STATUSES = [
+  { values: ['Planned', 'Planeada'], label: 'Planned', suffix: '', colorId: '6' },
+  { values: ['Done', 'Completada'], label: 'Done', suffix: ' ✓', colorId: '10' },
+  { values: ['Skipped', 'Saltada'], label: 'Skipped', suffix: ' (skipped)', colorId: '8' },
+];
+
+const PLAN_LABELS = {
+  'Empuje': 'Push',
+  'Tirón': 'Pull',
+  'Pierna A': 'Legs A',
+  'Superior': 'Upper Body',
+  'Pierna B': 'Legs B',
+  'Deporte': 'Sports',
 };
 
 // ─── GOOGLE AUTH ─────────────────────────────────────────────────────────────
@@ -79,12 +101,9 @@ async function gcal(token, method, path, body) {
 }
 
 // ─── NOTION QUERY ────────────────────────────────────────────────────────────
-async function queryNotion(cursor, since) {
-  const body = {
-    page_size: 100,
-    filter: { property: 'Fecha', date: { on_or_after: since } },
-    sorts: [{ property: 'Fecha', direction: 'ascending' }],
-  };
+// No filter/sort by property name on purpose — names may be renamed; the DB is small.
+async function queryNotion(cursor) {
+  const body = { page_size: 100 };
   if (cursor) body.start_cursor = cursor;
   const res = await fetch(`https://api.notion.com/v1/databases/${SESSIONS_DB_ID}/query`, {
     method: 'POST',
@@ -100,15 +119,16 @@ async function queryNotion(cursor, since) {
 }
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
-const plainText = (prop) => (prop?.title || prop?.rich_text || []).map(t => t.plain_text).join('');
+const prop = (page, key) => PROPS[key].map(name => page.properties[name]).find(Boolean);
+const plainText = (p) => (p?.title || p?.rich_text || []).map(t => t.plain_text).join('');
 
 function toEvent(page) {
-  const p = page.properties;
-  const fecha = p['Fecha']?.date;
-  const estado = p['Estado']?.select?.name || 'Planeada';
-  const plan = p['Día del plan']?.select?.name || 'Entrenamiento';
-  const minutes = p['Duración min']?.number || DEFAULT_MINUTES;
-  const style = STATUS_STYLE[estado] || STATUS_STYLE.Planeada;
+  const fecha = prop(page, 'date')?.date;
+  const rawStatus = prop(page, 'status')?.select?.name;
+  const rawPlan = prop(page, 'plan')?.select?.name;
+  const minutes = prop(page, 'minutes')?.number || DEFAULT_MINUTES;
+  const status = STATUSES.find(s => s.values.includes(rawStatus)) || STATUSES[0];
+  const plan = PLAN_LABELS[rawPlan] || rawPlan || 'Training';
 
   let start, end;
   if (fecha.start.includes('T')) {
@@ -119,15 +139,15 @@ function toEvent(page) {
     end = new Date(start.getTime() + minutes * 60000);
   }
 
-  const notas = plainText(p['Notas']);
+  const notes = plainText(prop(page, 'notes'));
   return {
     id: page.id.replace(/-/g, ''),
     status: 'confirmed',
-    summary: `🏋️ ${plan}${style.suffix}`,
-    description: [`Sesión: ${plainText(p['Sesión'])}`, `Estado: ${estado}`, notas, page.url].filter(Boolean).join('\n'),
+    summary: `🏋️ ${plan}${status.suffix}`,
+    description: [`Status: ${status.label}`, notes, `Notion: ${page.url}`].filter(Boolean).join('\n'),
     start: { dateTime: start.toISOString(), timeZone: TZ },
     end: { dateTime: end.toISOString(), timeZone: TZ },
-    colorId: style.colorId,
+    colorId: status.colorId,
     extendedProperties: { private: { source: SOURCE_TAG } },
   };
 }
@@ -157,16 +177,17 @@ function sameEvent(a, b) {
   const pages = [];
   let cursor;
   do {
-    const res = await queryNotion(cursor, since);
+    const res = await queryNotion(cursor);
     pages.push(...res.results);
     cursor = res.has_more ? res.next_cursor : null;
   } while (cursor);
 
-  const wanted = new Map(pages.filter(pg => pg.properties['Fecha']?.date?.start).map(pg => {
+  const dated = pages.filter(pg => (prop(pg, 'date')?.date?.start || '').slice(0, 10) >= since);
+  const wanted = new Map(dated.map(pg => {
     const ev = toEvent(pg);
     return [ev.id, ev];
   }));
-  console.log(`Fetched ${pages.length} sessions from Notion since ${since} (${wanted.size} with a date).`);
+  console.log(`Fetched ${pages.length} sessions from Notion (${wanted.size} dated since ${since}).`);
 
   const token = await getGoogleToken();
 
