@@ -7,7 +7,7 @@
 // ONE-WAY SYNC: Notion is the source of truth.
 //   • Each session becomes one event whose Google event id IS the Notion page
 //     id (32 hex chars are valid base32hex) → re-runs update, never duplicate.
-//   • Date-only sessions get the default training slot (5:30–7:00 AM Bogotá).
+//   • Date-only sessions get the default training slot (6:00–7:30 AM Bogotá).
 //   • Sessions deleted in Notion (or whose date was cleared) are removed from
 //     the calendar. Only events tagged source=notion-training are ever touched.
 //   • The calendar is always in English. Property names and select values are
@@ -30,7 +30,7 @@ const DRY_RUN = process.env.DRY_RUN === '1';
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
 const TZ = 'America/Bogota';
 const TZ_OFFSET = '-05:00';                  // Bogotá has no DST
-const DEFAULT_START = '05:30';
+const DEFAULT_START = '06:00';
 const DEFAULT_MINUTES = 90;
 const LOOKBACK_DAYS = 30;                    // older sessions are left alone
 const SOURCE_TAG = 'notion-training';
