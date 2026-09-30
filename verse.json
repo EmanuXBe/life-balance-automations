@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-09-29T15:37:16.276Z",
-  "day": 272,
-  "votdUrl": "https://www.bible.com/verse-of-the-day?day=272",
-  "text": "For the LORD is our judge, the LORD is our lawgiver, the LORD is our king; it is he who will save us.",
-  "reference": "Isaiah 33:22",
-  "image": null,
+  "updatedAt": "2026-09-30T15:47:31.039Z",
+  "day": 273,
+  "votdUrl": "https://www.bible.com/verse-of-the-day?day=273",
+  "text": "For I know the plans I have for you, declares the LORD.",
+  "reference": "Jeremiah 29:11",
+  "image": "https://imageproxy.youversionapi.com/640x640/https://s3.amazonaws.com/static-youversionapi-com/images/base/52894/1280x1280.jpg",
   "version": "NIV",
-  "source": "ourmanna"
+  "source": "fallback"
 }
